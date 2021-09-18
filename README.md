@@ -13,6 +13,13 @@ It is meant to be used as a library in part of your existing application.
 - [ ] Can get trace data in a distributed way
 - [ ] More to come !
 
+## Non Goals
+
+- Be useable in any BEAM language. This may happen in the future but for now we
+  depend on dog_sketch which is in elixir
+- separate frontend and data collection library. That may come in the future,
+  but no time for it at spawnfest
+
 ## TODO add how to add it to your app
 
 ## Hacking
@@ -21,8 +28,8 @@ Orion is a phoenix liveview application for the frontend.
 
 To start your Phoenix server:
 
-* Install dependencies with `mix deps.get`
-* Install Node.js dependencies with `yarn install --cwd assets` inside the `assets` directory
-* Start Phoenix endpoint with `mix phx.server`
+- Install dependencies with `mix deps.get`
+- Install Node.js dependencies with `yarn install --cwd assets` inside the `assets` directory
+- Start Phoenix endpoint with `mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
