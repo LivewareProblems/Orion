@@ -2,7 +2,7 @@
 
 with pkgs;
 let
-  elixir = beam.packages.erlangR24.elixir_1_11;
+  elixir = beam.packages.erlangR24.elixir_1_12;
   node = nodejs-slim-16_x;
 
 in mkShell {

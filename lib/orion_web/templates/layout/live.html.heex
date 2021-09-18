@@ -1,9 +1,9 @@
-<main role="main" class="container">
-  <p class="alert alert-info" role="alert"
+<main role="main" class="bg-white">
+  <p class="bg-bronze-20 text-bronze-80 rounded relative text-center font-bold" role="alert"
     phx-click="lv:clear-flash"
     phx-value-key="info"><%= live_flash(@flash, :info) %></p>
 
-  <p class="alert alert-danger" role="alert"
+  <p class="bg-red-20 text-red-80 rounded relative text-center font-bold" role="alert"
     phx-click="lv:clear-flash"
     phx-value-key="error"><%= live_flash(@flash, :error) %></p>
 
