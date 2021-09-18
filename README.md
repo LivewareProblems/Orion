@@ -29,6 +29,11 @@ Orion is a phoenix liveview application for the frontend.
 To start your Phoenix server:
 
 - Install dependencies with `mix deps.get`
+
+Test can be run with `mix test`. We try to keep everything in the elixir side tested fairly completely
+
+If you want to see it in action
+
 - Install Node.js dependencies with `yarn install --cwd assets` inside the `assets` directory
 - Start Phoenix endpoint with `mix phx.server`
 
