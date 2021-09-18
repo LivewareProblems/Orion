@@ -34,15 +34,16 @@ defmodule Orion.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.5.12"},
-      {:phoenix_live_view, "~> 0.15.1"},
+      {:phoenix_live_view, "~> 0.16.3"},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_html, "~> 2.11"},
+      {:phoenix_html, "~> 3.0.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:dog_sketch, "~> 0.1.2"}
     ]
   end
 
