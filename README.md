@@ -6,6 +6,13 @@ function calls across the whole cluster.
 
 It is meant to be used as a library in part of your existing application.
 
+## Goals
+
+- [ ] Can show a graph of fake or real data
+- [ ] Can change the function traced to a new one
+- [ ] Can get trace data in a distributed way
+- [ ] More to come !
+
 ## TODO add how to add it to your app
 
 ## Hacking
