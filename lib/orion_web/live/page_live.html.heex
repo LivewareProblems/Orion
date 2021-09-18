@@ -1,0 +1,20 @@
+<section class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12">
+<.form let={f} for={:match_spec} class="flex flex-row justify-between flex-wrap px-2">
+  <div class="flex flex-col flex-grow">
+    <%= label f, :module_name, "Module", [class: "text-black mx-5 my-2 font-medium"] %>
+    <%= text_input f, :module_name , [value: @match_spec.module_name, placeholder: "Module", class: "border-2 border-gray-60 bg-white text-black hover:border-teal-50 focus:border-blue-50 rounded py-2 px-3 mx-4 mb-3 leading-tight focus:outline-none"]%>
+  </div>
+
+  <div class="flex flex-col flex-grow">
+    <%= label f, :function_name, "Function", [class: "text-black mx-5 my-2 font-medium"] %>
+    <%= text_input f, :function_name , [value: @match_spec.function_name, placeholder: "Function", class: "border-2 border-gray-60 bg-white text-black hover:border-teal-50 focus:border-blue-50 rounded py-2 px-3 mx-4 mb-3 leading-tight focus:outline-none"]%>
+  </div>
+
+  <div class="flex flex-col flex-grow">
+    <%= label f, :arity, "Arity", [class: "text-black mx-5 my-2 font-medium"] %>
+    <%= number_input f, :arity , [value: @match_spec.arity, placeholder: "Arity", class: "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-3 mx-4 mb-3 leading-tight focus:outline-none"]%>
+  </div>
+
+  <%= submit "Run profiling", ["phx-disable-with": "Setting up Trace...", class: "self-stretch w-40 rounded font-old py-2 px-4 mr-4 my-3 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"]%>
+</.form>
+</section>
