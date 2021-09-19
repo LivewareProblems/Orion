@@ -2,22 +2,44 @@ defmodule Orion.Tracer do
   use GenServer
   import Ex2ms
 
-  def start_all_node_tracers(mfa) do
+  def start_all_node_tracers(mfa, self) do
+    if self do
+      Orion.Tracer.start_tracer(mfa, self())
+    end
+
     :erpc.multicall(list_nodes(), Orion.Tracer, :start_tracer, [mfa, self()], 5_000)
     :ok
   end
 
-  def start_tracer(mfa, pid) do
-    spec = {OrionTracer, [mfa, pid]}
-    DynamicSupervisor.start_child(Orion.TracerSupervisor, spec)
+  def pause_trace(nil, _self) do
+    :ok
   end
 
-  def pause_trace(mfa) do
+  def pause_trace(mfa, self) do
+    if self do
+      :erlang.trace_pattern(mfa, false, [])
+    end
+
     :erpc.multicall(list_nodes(), :erlang, :trace_pattern, [mfa, false, []], 5_000)
   end
 
-  def restart_trace(mfa) do
-    :erpc.multicall(list_nodes(), :erlang, :trace_pattern, [mfa, [match_spec()], [:local]], 5_000)
+  def restart_trace(mfa, self) do
+    if self do
+      :erlang.trace_pattern(mfa, [match_spec()], [:local])
+    end
+
+    :erpc.multicall(
+      list_nodes(),
+      :erlang,
+      :trace_pattern,
+      [mfa, [match_spec()], [:local]],
+      5_000
+    )
+  end
+
+  def start_tracer(mfa, pid) do
+    spec = {Orion.Tracer, [mfa, pid]}
+    DynamicSupervisor.start_child(Orion.TracerSupervisor, spec)
   end
 
   def stop(pid) do
@@ -138,6 +160,6 @@ defmodule Orion.Tracer do
   end
 
   defp list_nodes() do
-    [Node.self(), Node.list()]
+    Node.list()
   end
 end

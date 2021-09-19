@@ -18,7 +18,8 @@ defmodule OrionWeb.PageLive do
       quantile_data_raw: quantile_data,
       scale: Jason.encode!(scale),
       pause_state: nil,
-      ddsketch: empty_dd
+      ddsketch: empty_dd,
+      self_profile: false
     }
 
     {:ok, assign(socket, data)}
@@ -30,7 +31,7 @@ defmodule OrionWeb.PageLive do
     scale = "Linear"
 
     old_mfa = Orion.MatchSpec.mfa(socket.assigns.match_spec)
-    Orion.Tracer.pause_trace(old_mfa)
+    Orion.Tracer.pause_trace(old_mfa, socket.assigns.self_profile)
 
     :pg.get_members({Orion, old_mfa})
     |> Enum.map(fn pid -> Orion.Tracer.stop(pid) end)
@@ -50,14 +51,18 @@ defmodule OrionWeb.PageLive do
       quantile_data_raw: quantile_data,
       scale: Jason.encode!(scale),
       pause_state: :running,
-      ddsketch: DogSketch.SimpleDog.new()
+      ddsketch: DogSketch.SimpleDog.new(),
+      self_profile: query["self_profile"] == "true"
     }
 
     Process.send_after(self(), :update_data, 1_000)
     socket = assign(socket, data)
 
     unless fake_data do
-      Orion.Tracer.start_all_node_tracers(Orion.MatchSpec.mfa(new_match_spec))
+      Orion.Tracer.start_all_node_tracers(
+        Orion.MatchSpec.mfa(new_match_spec),
+        query["self_profile"] == "true"
+      )
     end
 
     {:noreply, socket}
@@ -80,13 +85,21 @@ defmodule OrionWeb.PageLive do
             ddsketch: empty_dd
           }
 
-          Orion.Tracer.restart_trace(Orion.MatchSpec.mfa(socket.assigns.match_spec))
+          Orion.Tracer.restart_trace(
+            Orion.MatchSpec.mfa(socket.assigns.match_spec),
+            socket.assigns.self_profile
+          )
+
           Process.send_after(self(), :update_data, 1_000)
 
           assign(socket, data)
 
         :running ->
-          Orion.Tracer.pause_trace(Orion.MatchSpec.mfa(socket.assigns.match_spec))
+          Orion.Tracer.pause_trace(
+            Orion.MatchSpec.mfa(socket.assigns.match_spec),
+            socket.assigns.self_profile
+          )
+
           assign(socket, :pause_state, :paused)
 
         _ ->
@@ -170,7 +183,10 @@ defmodule OrionWeb.PageLive do
   end
 
   defp get_quantile(data, quantile) do
-    SimpleDog.quantile(data, quantile) |> ceil()
+    case SimpleDog.quantile(data, quantile) do
+      nil -> 0
+      x -> ceil(x)
+    end
   end
 
   def pause_state_text(atom) do

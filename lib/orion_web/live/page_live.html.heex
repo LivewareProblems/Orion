@@ -25,7 +25,12 @@
     <%= checkbox f, :fake_data , [class: "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-4 mb-3 leading-tight focus:outline-none"]%>
   </div>
 
-  <%= submit "Run profiling", ["phx-disable-with": "Setting up Trace...", class: "self-stretch w-25 rounded font-old py-2 px-4 mr-4 my-3 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"]%>
+  <div class="flex flex-col flex-grow">
+    <%= label f, :self_profile, "self?", [class: "text-black mx-2 my-2 font-medium"] %>
+    <%= checkbox f, :self_profile , [class: "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-4 mb-3 leading-tight focus:outline-none"]%>
+  </div>
+
+  <%= submit "Run", ["phx-disable-with": "Setting up Trace...", class: "self-stretch w-15 rounded font-old py-2 px-2 mr-4 my-3 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"]%>
   
 </.form>
 </div>

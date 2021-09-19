@@ -1,5 +1,16 @@
 # Orion
 
+**Warning** The real data and tracing does not work. You can run it to see fake
+data, but we are tired, we had both weekend full of family stuff to do....
+
+So honestly, it is broken. That is life. Will probably fix in the future cause i
+need it, but not now
+
+Oh and there are no tests. We simply had too much family needs during weekends.
+Life is life.
+
+## What is Orion ?
+
 Orion is a Dynamic Distributed Profiler. It allows you to profile any function
 in an erlang cluster and get back an histogram representing the profile of the
 function calls across the whole cluster.
@@ -8,8 +19,8 @@ It is meant to be used as a library in part of your existing application.
 
 ## Goals
 
-- [ ] Can show a graph of fake or real data
-- [ ] Can change the function traced to a new one
+- [x] Can show a graph of fake or real data
+- [x] Can change the function traced to a new one
 - [ ] Can get trace data in a distributed way
 - [ ] More to come !
 
