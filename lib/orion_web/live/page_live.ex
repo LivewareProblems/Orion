@@ -15,7 +15,8 @@ defmodule OrionWeb.PageLive do
       quantile_data: Jason.encode!(quantile_data),
       quantile_data_raw: quantile_data,
       scale: Jason.encode!(scale),
-      pause_state: nil
+      pause_state: nil,
+      ddsketch: DogSketch.SimpleDog.new()
     }
 
     {:ok, assign(socket, data)}
@@ -39,7 +40,8 @@ defmodule OrionWeb.PageLive do
       quantile_data: Jason.encode!(quantile_data),
       quantile_data_raw: quantile_data,
       scale: Jason.encode!(scale),
-      pause_state: :running
+      pause_state: :running,
+      ddsketch: DogSketch.SimpleDog.new()
     }
 
     Process.send_after(self(), :update_data, 1_000)
@@ -93,6 +95,12 @@ defmodule OrionWeb.PageLive do
 
     socket = assign(socket, data)
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:ddsketch, data}, socket) do
+    new_ddsketch = DogSketch.SimpleDog.merge(data, socket.assigns.ddksetch)
+    {:noreply, assign(socket, :ddsketch, new_ddsketch)}
   end
 
   defp get_fake_data() do

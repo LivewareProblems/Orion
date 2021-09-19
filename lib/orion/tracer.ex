@@ -5,12 +5,12 @@ defmodule Orion.Tracer do
   def start_all_node_tracers(mfa) do
     list_nodes = [Node.self(), Node.list()]
 
-    :erpc.multicall(list_nodes, Orion.Tracer, :start_tracer, [mfa], 5_000)
+    :erpc.multicall(list_nodes, Orion.Tracer, :start_tracer, [mfa, self()], 5_000)
     :ok
   end
 
-  def start_tracer(mfa) do
-    spec = {OrionTracer, [mfa]}
+  def start_tracer(mfa, pid) do
+    spec = {OrionTracer, [mfa, pid]}
     DynamicSupervisor.start_child(Orion.TracerSupervisor, spec)
   end
 
@@ -18,17 +18,18 @@ defmodule Orion.Tracer do
     GenServer.start_link(__MODULE__, init)
   end
 
-  def child_spec(arg) do
+  def child_spec(args) do
     %{
-      id: {Orion.Tracer, arg},
-      start: {Orion.Tracer, :start_link, [arg]}
+      id: {Orion.Tracer, args},
+      start: {Orion.Tracer, :start_link, [args]}
     }
   end
 
   @impl true
-  def init(mfa) do
+  def init([mfa, pid]) do
     initial_state = %{
       mfa: mfa,
+      liveview_pid: pid,
       call_depth: %{},
       time_stored: %{},
       ddsketch: DogSketch.SimpleDog.new()
@@ -43,6 +44,7 @@ defmodule Orion.Tracer do
 
     :erlang.trace_pattern(mfa, ms, [:local])
     :erlang.trace(:all, true, [:call, :arity, :timestamp])
+    Process.send_after(self(), :send_data, 500)
     {:ok, initial_state}
   end
 
@@ -103,5 +105,12 @@ defmodule Orion.Tracer do
 
         {:noreply, Map.put(state, :call_depth, new_cd_map)}
     end
+  end
+
+  @impl true
+  def handle_info(:send_data, %{ddsketch: ddsketch, liveview_pid: liveview_pid} = state) do
+    send(liveview_pid, {:ddsketch, ddsketch})
+
+    {:noreply, Map.put(state, :ddsketch, DogSketch.SimpleDog.new())}
   end
 end
