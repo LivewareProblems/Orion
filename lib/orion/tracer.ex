@@ -3,15 +3,21 @@ defmodule Orion.Tracer do
   import Ex2ms
 
   def start_all_node_tracers(mfa) do
-    list_nodes = [Node.self(), Node.list()]
-
-    :erpc.multicall(list_nodes, Orion.Tracer, :start_tracer, [mfa, self()], 5_000)
+    :erpc.multicall(list_nodes(), Orion.Tracer, :start_tracer, [mfa, self()], 5_000)
     :ok
   end
 
   def start_tracer(mfa, pid) do
     spec = {OrionTracer, [mfa, pid]}
     DynamicSupervisor.start_child(Orion.TracerSupervisor, spec)
+  end
+
+  def pause_trace(mfa) do
+    :erpc.multicall(list_nodes(), :erlang, :trace_pattern, [mfa, false, []], 5_000)
+  end
+
+  def restart_trace(mfa) do
+    :erpc.multicall(list_nodes(), :erlang, :trace_pattern, [mfa, [match_spec()], [:local]], 5_000)
   end
 
   def start_link(init \\ []) do
@@ -21,30 +27,27 @@ defmodule Orion.Tracer do
   def child_spec(args) do
     %{
       id: {Orion.Tracer, args},
-      start: {Orion.Tracer, :start_link, [args]}
+      start: {Orion.Tracer, :start_link, [args]},
+      restart: :transient
     }
   end
 
   @impl true
   def init([mfa, pid]) do
+    mon_ref = Process.monitor(pid)
+    :erlang.trace_pattern(mfa, [match_spec()], [:local])
+    :erlang.trace(:all, true, [:call, :arity, :timestamp])
+    Process.send_after(self(), :send_data, 500)
+
     initial_state = %{
       mfa: mfa,
       liveview_pid: pid,
       call_depth: %{},
       time_stored: %{},
-      ddsketch: DogSketch.SimpleDog.new()
+      ddsketch: DogSketch.SimpleDog.new(),
+      ref_mon: mon_ref
     }
 
-    ms =
-      fun do
-        _ ->
-          :return_trace
-          :exception_trace
-      end
-
-    :erlang.trace_pattern(mfa, ms, [:local])
-    :erlang.trace(:all, true, [:call, :arity, :timestamp])
-    Process.send_after(self(), :send_data, 500)
     {:ok, initial_state}
   end
 
@@ -112,5 +115,23 @@ defmodule Orion.Tracer do
     send(liveview_pid, {:ddsketch, ddsketch})
 
     {:noreply, Map.put(state, :ddsketch, DogSketch.SimpleDog.new())}
+  end
+
+  @impl true
+  def handle_info({:DOWN, ref, :process, _object, _reason}, %{ref_mon: ref, mfa: mfa} = state) do
+    :erlang.trace_pattern(mfa, false, [])
+    {:stop, :normal, state}
+  end
+
+  defp match_spec() do
+    fun do
+      _ ->
+        :return_trace
+        :exception_trace
+    end
+  end
+
+  defp list_nodes() do
+    [Node.self(), Node.list()]
   end
 end
