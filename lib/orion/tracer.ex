@@ -1,19 +1,49 @@
 defmodule Orion.Tracer do
   use GenServer
+  import Ex2ms
+
+  def start_all_node_tracers(mfa) do
+    list_nodes = [Node.self(), Node.list()]
+
+    :erpc.multicall(list_nodes, Orion.Tracer, :start_tracer, [mfa], 5_000)
+    :ok
+  end
+
+  def start_tracer(mfa) do
+    spec = {OrionTracer, [mfa]}
+    DynamicSupervisor.start_child(Orion.TracerSupervisor, spec)
+  end
 
   def start_link(init \\ []) do
     GenServer.start_link(__MODULE__, init)
   end
 
-  @impl true
-  def init(initial_state) do
-    # :erlang.trace(:all, true, [:call, :arity, :timestamp])
-    {:ok, initial_state}
+  def child_spec(arg) do
+    %{
+      id: {Orion.Tracer, arg},
+      start: {Orion.Tracer, :start_link, [arg]}
+    }
   end
 
   @impl true
-  def handle_call(:get_events, _from, state) do
-    {:reply, state, []}
+  def init(mfa) do
+    initial_state = %{
+      mfa: mfa,
+      call_depth: %{},
+      time_stored: %{},
+      ddsketch: DogSketch.SimpleDog.new()
+    }
+
+    ms =
+      fun do
+        _ ->
+          :return_trace
+          :exception_trace
+      end
+
+    :erlang.trace_pattern(mfa, ms, [:local])
+    :erlang.trace(:all, true, [:call, :arity, :timestamp])
+    {:ok, initial_state}
   end
 
   @impl true

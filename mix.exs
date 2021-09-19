@@ -43,7 +43,8 @@ defmodule Orion.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:dog_sketch, "~> 0.1.2"}
+      {:dog_sketch, "~> 0.1.2"},
+      {:ex2ms, "~> 1.6"}
     ]
   end
 
