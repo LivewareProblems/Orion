@@ -69,11 +69,13 @@ defmodule OrionWeb.PageLive do
             ddsketch: empty_dd
           }
 
+          Orion.Tracer.restart_trace(Orion.MatchSpec.mfa(socket.assigns.match_spec))
           Process.send_after(self(), :update_data, 1_000)
 
           assign(socket, data)
 
         :running ->
+          Orion.Tracer.pause_trace(Orion.MatchSpec.mfa(socket.assigns.match_spec))
           assign(socket, :pause_state, :paused)
 
         _ ->
@@ -102,7 +104,8 @@ defmodule OrionWeb.PageLive do
 
     data = %{
       quantile_data: Jason.encode!(quantile_data),
-      quantile_data_raw: quantile_data
+      quantile_data_raw: quantile_data,
+      ddsketch: DogSketch.SimpleDog.new()
     }
 
     socket = assign(socket, data)
