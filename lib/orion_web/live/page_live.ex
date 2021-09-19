@@ -6,8 +6,10 @@ defmodule OrionWeb.PageLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    quantile_data = formatted_time_series([], "Linear")
+    empty_dd = DogSketch.SimpleDog.new()
     scale = "Linear"
+
+    quantile_data = formatted_time_series([], empty_dd, scale)
 
     data = %{
       match_spec: %MatchSpec{},
@@ -16,7 +18,7 @@ defmodule OrionWeb.PageLive do
       quantile_data_raw: quantile_data,
       scale: Jason.encode!(scale),
       pause_state: nil,
-      ddsketch: DogSketch.SimpleDog.new()
+      ddsketch: empty_dd
     }
 
     {:ok, assign(socket, data)}
@@ -25,10 +27,10 @@ defmodule OrionWeb.PageLive do
   @impl true
   def handle_event("query_submit", %{"match_spec" => query}, socket) do
     fake_data = query["fake_data"] == "true"
-    # need to deal with this better?
-    quantile_data = formatted_time_series([], "Linear")
-
     scale = "Linear"
+
+    # need to deal with this better?
+    quantile_data = formatted_time_series([], DogSketch.SimpleDog.new(), scale)
 
     data = %{
       match_spec: %MatchSpec{
@@ -56,12 +58,15 @@ defmodule OrionWeb.PageLive do
       case socket.assigns.pause_state do
         :paused ->
           :running
-          quantile_data = formatted_time_series([], "Linear")
+          empty_dd = DogSketch.SimpleDog.new()
+
+          quantile_data = formatted_time_series([], empty_dd, "Linear")
 
           data = %{
             quantile_data: Jason.encode!(quantile_data),
             quantile_data_raw: quantile_data,
-            pause_state: :running
+            pause_state: :running,
+            ddsketch: empty_dd
           }
 
           Process.send_after(self(), :update_data, 1_000)
@@ -86,7 +91,14 @@ defmodule OrionWeb.PageLive do
       Process.send_after(self(), :update_data, 1_000)
     end
 
-    quantile_data = formatted_time_series(socket.assigns.quantile_data_raw, "Linear")
+    sketch =
+      if socket.assigns.fake_data do
+        get_fake_data()
+      else
+        socket.assigns.ddsketch
+      end
+
+    quantile_data = formatted_time_series(socket.assigns.quantile_data_raw, sketch, "Linear")
 
     data = %{
       quantile_data: Jason.encode!(quantile_data),
@@ -112,7 +124,7 @@ defmodule OrionWeb.PageLive do
   # thx derek <3
   # https://github.com/spawnfest/beamwork
 
-  defp formatted_time_series([], "Linear") do
+  defp formatted_time_series([], _sketch, "Linear") do
     end_ts = System.os_time(:second)
 
     start_ts =
@@ -131,9 +143,7 @@ defmodule OrionWeb.PageLive do
     ]
   end
 
-  defp formatted_time_series(old_data, "Linear") do
-    data = get_fake_data()
-
+  defp formatted_time_series(old_data, data, "Linear") do
     [timestamps, quantile99, quantile90, quantile50, count] = old_data
 
     [
