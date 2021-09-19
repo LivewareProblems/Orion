@@ -25,4 +25,6 @@
 </.form>
 </section>
 
-<div id="chart" class="chart" data-quantile={@quantile_data} data-scale={@scale} phx-hook="ChartData" phx-update="ignore"></div>
+<div class="w-full pt-4 px-4 mx-auto pb-4 flex flex-co">
+  <div id="chart" class="mx-auto h-full w-full text-black p-20" data-quantile={@quantile_data} data-scale={@scale} phx-hook="ChartData" phx-update="ignore"></div>
+</div>

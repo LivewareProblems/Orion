@@ -106,6 +106,5 @@ defmodule OrionWeb.PageLive do
 
   defp get_quantile(data, quantile) do
     val = SimpleDog.quantile(data, quantile) |> ceil()
-    val / 1000
   end
 end

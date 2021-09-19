@@ -53,7 +53,7 @@ function safe_to_fixed(number, decimals) {
 }
 
 function create_chart(data, scale) {
-  let rect = { width: window.innerWidth * 0.6, height: 400 };
+  let rect = { width: window.innerWidth * 0.8, height: 600 };
 
   let scaler = null;
   if (scale == "Linear") {
@@ -69,7 +69,6 @@ function create_chart(data, scale) {
   let opts = {
     title: "Module.function/arity timing",
     id: "chart1",
-    class: "my-chart",
     width: rect.width,
     height: rect.height,
     labelSize: 10,
@@ -77,8 +76,9 @@ function create_chart(data, scale) {
     ticks: { show: false },
     points: { show: false },
     font: "8px Arial",
+    padding: [null, null, null, 30],
     series: [
-      { value: '{YYYY}-{MM}-{DD} {HH}:{mm}:{ss}' },
+      { value: '{HH}:{mm}:{ss}' },
       {
         label: "P99",
         stroke: "rgb(155, 214, 206)",
@@ -104,14 +104,17 @@ function create_chart(data, scale) {
         scale: "ms"
       },
       {
-        label: "Throughput",
+        label: "count",
         ke: "rgb(30, 30, 30)",
-        value: (self, rawValue) => scaler(rawValue) + "rpm",
-        scale: "rpm"
+        value: (self, rawValue) => scaler(rawValue) + "cps",
+        scale: "cps"
       }
     ],
     axes: [
-      {},
+      {
+        values: [
+          [1, "{HH}:{mm}:{ss}", null, null, null, null, null, null, 1],]
+      },
       {
         scale: "ms",
         grid: { show: false },
@@ -119,8 +122,8 @@ function create_chart(data, scale) {
       },
       {
         side: 1,
-        values: (u, vals, space) => vals.map((val) => safe_to_fixed(scaler(val), 2) + "reqs"),
-        scale: "reqs",
+        values: (u, vals, space) => vals.map((val) => safe_to_fixed(scaler(val), 2) + "calls"),
+        scale: "calls",
         grid: { show: false },
       },
     ]

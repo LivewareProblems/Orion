@@ -1,3 +1,9 @@
+/*! purgecss start ignore */
+
+@import 'uplot/dist/uPlot.min.css';
+
+/*! purgecss end ignore */
+
 @tailwind base;
 
 @tailwind components;
