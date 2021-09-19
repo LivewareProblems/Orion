@@ -14,7 +14,8 @@ defmodule OrionWeb.PageLive do
       fake_data: false,
       quantile_data: Jason.encode!(quantile_data),
       quantile_data_raw: quantile_data,
-      scale: Jason.encode!(scale)
+      scale: Jason.encode!(scale),
+      pause_state: nil
     }
 
     {:ok, assign(socket, data)}
@@ -37,7 +38,8 @@ defmodule OrionWeb.PageLive do
       fake_data: fake_data,
       quantile_data: Jason.encode!(quantile_data),
       quantile_data_raw: quantile_data,
-      scale: Jason.encode!(scale)
+      scale: Jason.encode!(scale),
+      pause_state: :running
     }
 
     Process.send_after(self(), :update_data, 1_000)
@@ -46,11 +48,42 @@ defmodule OrionWeb.PageLive do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_event("start_pause_submit", _, socket) do
+    socket =
+      case socket.assigns.pause_state do
+        :paused ->
+          :running
+          quantile_data = formatted_time_series([], "Linear")
+
+          data = %{
+            quantile_data: Jason.encode!(quantile_data),
+            quantile_data_raw: quantile_data,
+            pause_state: :running
+          }
+
+          Process.send_after(self(), :update_data, 1_000)
+
+          assign(socket, data)
+
+        :running ->
+          assign(socket, :pause_state, :paused)
+
+        _ ->
+          socket
+      end
+
+    {:noreply, socket}
+  end
+
   @five_minute_in_sec 5 * 60
 
   @impl true
   def handle_info(:update_data, socket) do
-    Process.send_after(self(), :update_data, 1_000)
+    if socket.assigns.pause_state == :running do
+      Process.send_after(self(), :update_data, 1_000)
+    end
+
     quantile_data = formatted_time_series(socket.assigns.quantile_data_raw, "Linear")
 
     data = %{
@@ -105,6 +138,19 @@ defmodule OrionWeb.PageLive do
   end
 
   defp get_quantile(data, quantile) do
-    val = SimpleDog.quantile(data, quantile) |> ceil()
+    SimpleDog.quantile(data, quantile) |> ceil()
+  end
+
+  def pause_state_text(atom) do
+    case atom do
+      :paused ->
+        "Start"
+
+      :running ->
+        "Pause"
+
+      _ ->
+        "Start/Pause"
+    end
   end
 end

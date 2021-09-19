@@ -1,28 +1,34 @@
 <section class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12">
-<.form let={f} for={:match_spec} url="#" phx_submit="query_submit" class="flex flex-row justify-between flex-wrap px-2">
+<div class="flex flex-row justify-evenly px-2">
+<.form for={:start_pause} phx_submit="start_pause_submit" class="self-stretch flex flex-row">
+  <%= submit pause_state_text(@pause_state), [class: "self-center w-30 rounded py-2 px-3 mr-3 my-3 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"] %>
+</.form>
+
+<.form let={f} for={:match_spec} phx_submit="query_submit" class="flex flex-row justify-between flex-wrap px-2">
   <div class="flex flex-col flex-grow">
-    <%= label f, :module_name, "Module", [class: "text-black mx-5 my-2 font-medium"] %>
-    <%= text_input f, :module_name , [value: @match_spec.module_name, placeholder: "Module", class: "border-2 border-gray-60 bg-white text-black hover:border-teal-50 focus:border-blue-50 rounded py-2 px-3 mx-4 mb-3 leading-tight focus:outline-none"]%>
+    <%= label f, :module_name, "Module", [class: "text-black mx-3 my-2 font-medium"] %>
+    <%= text_input f, :module_name , [value: @match_spec.module_name, placeholder: "Module", class: "border-2 border-gray-60 bg-white text-black hover:border-teal-50 focus:border-blue-50 rounded py-2 px-2 mx-2 mb-3 leading-tight focus:outline-none"]%>
   </div>
 
   <div class="flex flex-col flex-grow">
-    <%= label f, :function_name, "Function", [class: "text-black mx-5 my-2 font-medium"] %>
-    <%= text_input f, :function_name , [value: @match_spec.function_name, placeholder: "Function", class: "border-2 border-gray-60 bg-white text-black hover:border-teal-50 focus:border-blue-50 rounded py-2 px-3 mx-4 mb-3 leading-tight focus:outline-none"]%>
+    <%= label f, :function_name, "Function", [class: "text-black mx-3 my-2 font-medium"] %>
+    <%= text_input f, :function_name , [value: @match_spec.function_name, placeholder: "Function", class: "border-2 border-gray-60 bg-white text-black hover:border-teal-50 focus:border-blue-50 rounded py-2 px-1 mx-2 mb-3 leading-tight focus:outline-none"]%>
   </div>
 
   <div class="flex flex-col flex-grow">
-    <%= label f, :arity, "Arity", [class: "text-black mx-5 my-2 font-medium"] %>
-    <%= number_input f, :arity , [value: @match_spec.arity, placeholder: "Arity", class: "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-3 mx-4 mb-3 leading-tight focus:outline-none"]%>
+    <%= label f, :arity, "Arity", [class: "text-black mx-3 my-2 font-medium"] %>
+    <%= number_input f, :arity , [value: @match_spec.arity, placeholder: "Arity", class: "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-2 mb-3 leading-tight focus:outline-none"]%>
   </div>
 
   <div class="flex flex-col flex-grow">
-    <%= label f, :fake_data, "Fake data", [class: "text-black mx-5 my-2 font-medium"] %>
-    <%= checkbox f, :fake_data , [class: "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-3 mx-4 mb-3 leading-tight focus:outline-none"]%>
+    <%= label f, :fake_data, "Fake?", [class: "text-black mx-2 my-2 font-medium"] %>
+    <%= checkbox f, :fake_data , [class: "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-4 mb-3 leading-tight focus:outline-none"]%>
   </div>
 
-  <%= submit "Run profiling", ["phx-disable-with": "Setting up Trace...", class: "self-stretch w-40 rounded font-old py-2 px-4 mr-4 my-3 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"]%>
+  <%= submit "Run profiling", ["phx-disable-with": "Setting up Trace...", class: "self-stretch w-25 rounded font-old py-2 px-4 mr-4 my-3 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"]%>
   
 </.form>
+</div>
 </section>
 
 <div class="w-full pt-4 px-4 mx-auto pb-4 flex flex-co">
