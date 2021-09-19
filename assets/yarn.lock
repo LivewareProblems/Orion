@@ -2899,10 +2899,10 @@ path-type@^4.0.0:
   version "1.5.12"
 
 "phoenix_html@file:../deps/phoenix_html":
-  version "2.14.3"
+  version "3.0.3"
 
 "phoenix_live_view@file:../deps/phoenix_live_view":
-  version "0.15.1"
+  version "0.16.3"
 
 picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.3:
   version "2.3.0"
@@ -4097,6 +4097,11 @@ universalify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-2.0.0.tgz#75a4984efedc4b08975c5aeb73f530d02df25717"
   integrity sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==
+
+uplot@^1.1.2:
+  version "1.6.16"
+  resolved "https://registry.yarnpkg.com/uplot/-/uplot-1.6.16.tgz#0c90c40dff52e9cbd7f24eb0d709c8cbf84be803"
+  integrity sha512-Rh0WtFgtZdYk70Knu1VyZYbwlx5GuoIFBezZuHwlEUiREsIjOKpe3CXLXLaKc7/49Z7XhQ/bazgF/f1zercxgw==
 
 uri-js@^4.2.2:
   version "4.4.1"
