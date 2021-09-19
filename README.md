@@ -35,6 +35,8 @@ It is meant to be used as a library in part of your existing application.
 
 ## Hacking
 
+You need elixir 1.12 and OTP 24.
+
 Orion is a phoenix liveview application for the frontend.
 
 To start your Phoenix server:
