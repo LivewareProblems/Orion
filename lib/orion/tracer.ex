@@ -20,6 +20,10 @@ defmodule Orion.Tracer do
     :erpc.multicall(list_nodes(), :erlang, :trace_pattern, [mfa, [match_spec()], [:local]], 5_000)
   end
 
+  def stop(pid) do
+    GenServer.stop(pid, :normal, 5_000)
+  end
+
   def start_link(init \\ []) do
     GenServer.start_link(__MODULE__, init)
   end
@@ -34,6 +38,8 @@ defmodule Orion.Tracer do
 
   @impl true
   def init([mfa, pid]) do
+    :pg.join({Orion, mfa}, self())
+
     mon_ref = Process.monitor(pid)
     :erlang.trace_pattern(mfa, [match_spec()], [:local])
     :erlang.trace(:all, true, [:call, :arity, :timestamp])

@@ -29,15 +29,22 @@ defmodule OrionWeb.PageLive do
     fake_data = query["fake_data"] == "true"
     scale = "Linear"
 
-    # need to deal with this better?
+    old_mfa = Orion.MatchSpec.mfa(socket.assigns.match_spec)
+    Orion.Tracer.pause_trace(old_mfa)
+
+    :pg.get_members({Orion, old_mfa})
+    |> Enum.map(fn pid -> Orion.Tracer.stop(pid) end)
+
     quantile_data = formatted_time_series([], DogSketch.SimpleDog.new(), scale)
 
+    new_match_spec = %MatchSpec{
+      module_name: query["module_name"],
+      function_name: query["function_name"],
+      arity: query["arity"]
+    }
+
     data = %{
-      match_spec: %MatchSpec{
-        module_name: query["module_name"],
-        function_name: query["function_name"],
-        arity: query["arity"]
-      },
+      match_spec: new_match_spec,
       fake_data: fake_data,
       quantile_data: Jason.encode!(quantile_data),
       quantile_data_raw: quantile_data,
@@ -48,6 +55,10 @@ defmodule OrionWeb.PageLive do
 
     Process.send_after(self(), :update_data, 1_000)
     socket = assign(socket, data)
+
+    unless fake_data do
+      Orion.Tracer.start_all_node_tracers(Orion.MatchSpec.mfa(new_match_spec))
+    end
 
     {:noreply, socket}
   end

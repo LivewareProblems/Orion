@@ -15,7 +15,8 @@ defmodule Orion.Application do
       OrionWeb.Endpoint,
       # Start a worker by calling: Orion.Worker.start_link(arg)
       # {Orion.Worker, arg}
-      {DynamicSupervisor, strategy: :one_for_one, name: Orion.TracerSupervisor}
+      {DynamicSupervisor, strategy: :one_for_one, name: Orion.TracerSupervisor},
+      %{id: :pg, start: {:pg, :start_link, []}, type: :supervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
