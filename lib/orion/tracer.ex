@@ -85,7 +85,6 @@ defmodule Orion.Tracer do
         {:trace_ts, trace_pid, :call, _mfa, start_time},
         state = %{call_depth: cd_map, time_stored: time_stored_map}
       ) do
-    IO.inspect(state, label: "called")
     cd = Map.get(cd_map, trace_pid, 0)
     new_cd_map = Map.put(cd_map, trace_pid, cd + 1)
 
@@ -143,6 +142,7 @@ defmodule Orion.Tracer do
   @impl true
   def handle_info(:send_data, %{ddsketch: ddsketch, liveview_pid: liveview_pid} = state) do
     send(liveview_pid, {:ddsketch, ddsketch})
+    Process.send_after(self(), :send_data, 500)
 
     {:noreply, Map.put(state, :ddsketch, DogSketch.SimpleDog.new())}
   end
