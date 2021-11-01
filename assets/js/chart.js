@@ -67,7 +67,6 @@ function create_chart(data, scale) {
   existing && existing.remove();
 
   let opts = {
-    title: "Module.function/arity timing",
     id: "chart1",
     width: rect.width,
     height: rect.height,

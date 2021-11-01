@@ -19,10 +19,33 @@ defmodule OrionWeb.PageLive do
       scale: Jason.encode!(scale),
       pause_state: nil,
       ddsketch: empty_dd,
-      self_profile: false
+      self_profile: false,
+      form_value: %{
+        module: "",
+        function: "",
+        arity: 0,
+        fake: "false",
+        self: "false"
+      }
     }
 
     {:ok, assign(socket, data)}
+  end
+
+  @impl true
+  def handle_event("query_validate", %{"match_spec" => query}, socket) do
+    socket =
+      assign(socket, %{
+        form_value: %{
+          module: query["module_name"],
+          function: query["function_name"],
+          arity: query["arity"],
+          fake: query["fake_data"],
+          self: query["self_profile"]
+        }
+      })
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -52,7 +75,14 @@ defmodule OrionWeb.PageLive do
       scale: Jason.encode!(scale),
       pause_state: :running,
       ddsketch: DogSketch.SimpleDog.new(),
-      self_profile: query["self_profile"] == "true"
+      self_profile: query["self_profile"] == "true",
+      form_value: %{
+        module: "",
+        function: "",
+        arity: 0,
+        fake: "false",
+        self: "false"
+      }
     }
 
     Process.send_after(self(), :update_data, 1_000)
@@ -138,7 +168,7 @@ defmodule OrionWeb.PageLive do
 
   @impl true
   def handle_info({:ddsketch, data}, socket) do
-    new_ddsketch = DogSketch.SimpleDog.merge(data, socket.assigns.ddksetch)
+    new_ddsketch = DogSketch.SimpleDog.merge(data, socket.assigns.ddsketch)
     {:noreply, assign(socket, :ddsketch, new_ddsketch)}
   end
 

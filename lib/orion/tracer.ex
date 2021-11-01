@@ -63,7 +63,8 @@ defmodule Orion.Tracer do
     :pg.join({Orion, mfa}, self())
 
     mon_ref = Process.monitor(pid)
-    :erlang.trace_pattern(mfa, [match_spec()], [:local])
+
+    :erlang.trace_pattern(mfa, match_spec(), [:local])
     :erlang.trace(:all, true, [:call, :arity, :timestamp])
     Process.send_after(self(), :send_data, 500)
 
@@ -81,9 +82,10 @@ defmodule Orion.Tracer do
 
   @impl true
   def handle_info(
-        {:trace_ts, trace_pid, :call, _mfa, _TraceTerm, start_time},
+        {:trace_ts, trace_pid, :call, _mfa, start_time},
         state = %{call_depth: cd_map, time_stored: time_stored_map}
       ) do
+    IO.inspect(state, label: "called")
     cd = Map.get(cd_map, trace_pid, 0)
     new_cd_map = Map.put(cd_map, trace_pid, cd + 1)
 
