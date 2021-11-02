@@ -139,7 +139,7 @@ defmodule OrionWeb.PageLive do
     {:noreply, socket}
   end
 
-  @five_minute_in_sec 5 * 60
+  @one_minute_in_sec 60
 
   @impl true
   def handle_info(:update_data, socket) do
@@ -186,7 +186,7 @@ defmodule OrionWeb.PageLive do
 
     start_ts =
       DateTime.utc_now()
-      |> DateTime.add(-@five_minute_in_sec, :second)
+      |> DateTime.add(-@one_minute_in_sec, :second)
       |> DateTime.to_unix(:second)
 
     keys = start_ts..end_ts
@@ -215,7 +215,7 @@ defmodule OrionWeb.PageLive do
   defp get_quantile(data, quantile) do
     case SimpleDog.quantile(data, quantile) do
       nil -> 0
-      x -> ceil(x)
+      x -> x
     end
   end
 

@@ -66,6 +66,7 @@ defmodule Orion.Tracer do
 
     :erlang.trace_pattern(mfa, match_spec(), [:local])
     :erlang.trace(:all, true, [:call, :arity, :timestamp])
+
     Process.send_after(self(), :send_data, 500)
 
     initial_state = %{
@@ -120,9 +121,7 @@ defmodule Orion.Tracer do
         {start_time, new_ts_map} = Map.pop(time_stored_map, {trace_pid, 1})
 
         call_time_micro = :timer.now_diff(end_time, start_time)
-        call_time = System.convert_time_unit(call_time_micro, :microsecond, :millisecond)
-
-        new_sketch = DogSketch.SimpleDog.insert(ddsketch, call_time)
+        new_sketch = DogSketch.SimpleDog.insert(ddsketch, call_time_micro / 1_000)
 
         new_state =
           state
@@ -156,8 +155,8 @@ defmodule Orion.Tracer do
   defp match_spec() do
     fun do
       _ ->
-        :return_trace
-        :exception_trace
+        return_trace()
+        exception_trace()
     end
   end
 
