@@ -75,7 +75,7 @@ function create_chart(data, scale) {
     ticks: { show: false },
     points: { show: false },
     font: "8px Arial",
-    padding: [null, null, null, 30],
+    padding: [null, 30, null, 30],
     series: [
       { value: '{HH}:{mm}:{ss}' },
       {
@@ -106,7 +106,7 @@ function create_chart(data, scale) {
         label: "count",
         ke: "rgb(30, 30, 30)",
         value: (self, rawValue) => scaler(rawValue) + "cps",
-        scale: "cps"
+        scale: "calls"
       }
     ],
     axes: [
@@ -117,11 +117,11 @@ function create_chart(data, scale) {
       {
         scale: "ms",
         grid: { show: false },
-        values: (u, vals, space) => vals.map((val) => safe_to_fixed(scaler(val), 2) + "ms")
+        values: (u, vals, space) => vals.map((val) => safe_to_fixed(scaler(val), 3) + "ms")
       },
       {
         side: 1,
-        values: (u, vals, space) => vals.map((val) => safe_to_fixed(scaler(val), 2) + "calls"),
+        values: (u, vals, space) => vals.map((val) => safe_to_fixed(scaler(val), 1) + " calls"),
         scale: "calls",
         grid: { show: false },
       },
