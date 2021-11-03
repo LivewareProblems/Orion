@@ -104,7 +104,7 @@ function create_chart(data, scale) {
       },
       {
         label: "count",
-        ke: "rgb(30, 30, 30)",
+        stroke: "rgb(30, 30, 30)",
         value: (self, rawValue) => scaler(rawValue) + "cps",
         scale: "calls"
       }
