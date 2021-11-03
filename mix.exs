@@ -34,7 +34,7 @@ defmodule Orion.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.5.12"},
-      {:phoenix_live_view, "~> 0.16.3"},
+      {:phoenix_live_view, "~> 0.17"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_html, "~> 3.0.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
