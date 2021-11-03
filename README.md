@@ -1,13 +1,6 @@
 # Orion
 
-**Warning** The real data and tracing does not work. You can run it to see fake
-data, but we are tired, we had both weekend full of family stuff to do....
-
-So honestly, it is broken. That is life. Will probably fix in the future cause i
-need it, but not now
-
-Oh and there are no tests. We simply had too much family needs during weekends.
-Life is life.
+**Warning** This is beta/alpha software. It works, it runs, but it is really rough and there are no tests. You have been warned
 
 ## What is Orion ?
 
@@ -21,21 +14,22 @@ It is meant to be used as a library in part of your existing application.
 
 - [x] Can show a graph of fake or real data
 - [x] Can change the function traced to a new one
-- [ ] Can get trace data in a distributed way
+- [x] Can get trace data in a distributed way
+- [ ] Can trace multiple MFA
+- [ ] Can use arguments match_specs
 - [ ] More to come !
 
 ## Non Goals
 
 - Be useable in any BEAM language. This may happen in the future but for now we
   depend on dog_sketch which is in elixir
-- separate frontend and data collection library. That may come in the future,
-  but no time for it at spawnfest
+- separate frontend and data collection library. That may come in the future.
 
 ## TODO add how to add it to your app
 
 ## Hacking
 
-You need elixir 1.12 and OTP 24.
+You need elixir 1.12+ and OTP 24+.
 
 Orion is a phoenix liveview application for the frontend.
 
