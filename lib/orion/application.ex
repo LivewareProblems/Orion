@@ -12,11 +12,9 @@ defmodule Orion.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Orion.PubSub},
       # Start the Endpoint (http/https)
-      OrionWeb.Endpoint,
+      OrionWeb.Endpoint
       # Start a worker by calling: Orion.Worker.start_link(arg)
       # {Orion.Worker, arg}
-      {DynamicSupervisor, strategy: :one_for_one, name: Orion.TracerSupervisor},
-      %{id: :pg, start: {:pg, :start_link, []}, type: :supervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -54,10 +54,10 @@ defmodule OrionWeb.PageLive do
     scale = "Linear"
 
     old_mfa = Orion.MatchSpec.mfa(socket.assigns.match_spec)
-    Orion.Tracer.pause_trace(old_mfa, socket.assigns.self_profile)
+    OrionCollector.Tracer.pause_trace(old_mfa, socket.assigns.self_profile)
 
     :pg.get_members({Orion, old_mfa})
-    |> Enum.map(fn pid -> Orion.Tracer.stop(pid) end)
+    |> Enum.map(fn pid -> OrionCollector.Tracer.stop(pid) end)
 
     quantile_data = formatted_time_series([], DogSketch.SimpleDog.new(), scale)
 
@@ -89,7 +89,7 @@ defmodule OrionWeb.PageLive do
     socket = assign(socket, data)
 
     unless fake_data do
-      Orion.Tracer.start_all_node_tracers(
+      OrionCollector.Tracer.start_all_node_tracers(
         Orion.MatchSpec.mfa(new_match_spec),
         query["self_profile"] == "true"
       )
@@ -115,7 +115,7 @@ defmodule OrionWeb.PageLive do
             ddsketch: empty_dd
           }
 
-          Orion.Tracer.restart_trace(
+          OrionCollector.Tracer.restart_trace(
             Orion.MatchSpec.mfa(socket.assigns.match_spec),
             socket.assigns.self_profile
           )
@@ -125,7 +125,7 @@ defmodule OrionWeb.PageLive do
           assign(socket, data)
 
         :running ->
-          Orion.Tracer.pause_trace(
+          OrionCollector.Tracer.pause_trace(
             Orion.MatchSpec.mfa(socket.assigns.match_spec),
             socket.assigns.self_profile
           )

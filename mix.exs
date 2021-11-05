@@ -44,7 +44,7 @@ defmodule Orion.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:dog_sketch, "~> 0.1.2"},
-      {:ex2ms, "~> 1.6"}
+      {:orion_collector, git: "git@github.com:DianaOlympos/orion_collector.git", ref: "main"}
     ]
   end
 
