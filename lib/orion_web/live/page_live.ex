@@ -26,7 +26,9 @@ defmodule OrionWeb.PageLive do
         arity: 0,
         fake: "false",
         self: "false"
-      }
+      },
+      module_suggestions: Orion.Reflect.defined_modules(""),
+      function_suggestions: []
     }
 
     {:ok, assign(socket, data)}
@@ -34,6 +36,7 @@ defmodule OrionWeb.PageLive do
 
   @impl true
   def handle_event("query_validate", %{"match_spec" => query}, socket) do
+    module = Orion.Reflect.string_to_module(query["module_name"])
     socket =
       assign(socket, %{
         form_value: %{
@@ -42,7 +45,9 @@ defmodule OrionWeb.PageLive do
           arity: query["arity"],
           fake: query["fake_data"],
           self: query["self_profile"]
-        }
+        },
+        module_suggestions: Orion.Reflect.defined_modules(query["module_name"]),
+        function_suggestions: Orion.Reflect.defined_functions(module)
       })
 
     {:noreply, socket}
