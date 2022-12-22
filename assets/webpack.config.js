@@ -5,9 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const TailwindExtractor = content => {
-  return content.match(/[\w-/:]+(?<!:)/g) || [];
-};
+
 module.exports = (env, options) => {
   const devMode = options.mode !== 'production';
 
@@ -42,7 +40,7 @@ module.exports = (env, options) => {
             MiniCssExtractPlugin.loader,
             'css-loader',
             'postcss-loader'
-            ],
+          ],
         }
       ]
     },
@@ -54,7 +52,7 @@ module.exports = (env, options) => {
           to: '../'
         }]
       })
-      ]
+    ]
     // .concat(devMode ? [new HardSourceWebpackPlugin()] : [])
   }
 };

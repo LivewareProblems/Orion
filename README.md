@@ -41,7 +41,7 @@ Test can be run with `mix test`. We try to keep everything in the elixir side te
 
 If you want to see it in action
 
-- Install Node.js dependencies with `yarn install --cwd assets` inside the `assets` directory
+- Install Node.js dependencies with `npm install --cwd assets` inside the `assets` directory
 - Start Phoenix endpoint with `mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
