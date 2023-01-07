@@ -12,7 +12,7 @@ defmodule OrionWeb.ChartLive do
         <%= "#{@match_spec.module_name}.#{@match_spec.function_name}/#{@match_spec.arity}" %>
       </h3>
       <div
-        id="livechart"
+        id={"livechart-#{@key}"}
         class="chart mx-auto h-full w-full text-black px-20 py-2"
         data-quantile={@quantile_data}
         data-scale={@scale}
@@ -31,7 +31,8 @@ defmodule OrionWeb.ChartLive do
 
     quantile_data = formatted_time_series([], empty_dd, scale)
 
-    match_spec = Orion.MatchSpecDB.get(key)
+    %{match_spec: match_spec, ms_options: %{self_profile: self_profile, fake_data: fake}} =
+      Orion.MatchSpecDB.get(key)
 
     socket =
       socket
@@ -41,15 +42,62 @@ defmodule OrionWeb.ChartLive do
         scale: Jason.encode!(scale),
         pause_state: nil,
         ddsketch: empty_dd,
-        fake_data: false,
-        self_profile: false,
-        match_spec: match_spec
+        fake_data: fake,
+        self_profile: self_profile,
+        match_spec: match_spec,
+        key: key
       })
+
+    if connected?(socket) do
+      Process.send_after(self(), :update_data, 1_000)
+
+      unless fake do
+        OrionCollector.Tracer.start_all_node_tracers(
+          Orion.MatchSpec.mfa(match_spec),
+          self_profile
+        )
+      end
+    end
 
     {:ok, socket}
   end
 
+  @impl true
+  def handle_info(:update_data, socket) do
+    Process.send_after(self(), :update_data, 1_000)
+
+    sketch =
+      if socket.assigns.fake_data do
+        get_fake_data()
+      else
+        socket.assigns.ddsketch
+      end
+
+    quantile_data = formatted_time_series(socket.assigns.quantile_data_raw, sketch, "Linear")
+
+    data = %{
+      quantile_data: Jason.encode!(quantile_data),
+      quantile_data_raw: quantile_data,
+      ddsketch: DogSketch.SimpleDog.new()
+    }
+
+    socket = assign(socket, data)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:ddsketch, data}, socket) do
+    new_ddsketch = DogSketch.SimpleDog.merge(data, socket.assigns.ddsketch)
+    {:noreply, assign(socket, :ddsketch, new_ddsketch)}
+  end
+
   @one_minute_in_sec 60
+
+  defp get_fake_data() do
+    Enum.reduce(1..100, SimpleDog.new(), fn _x, acc ->
+      SimpleDog.insert(acc, :rand.uniform(1_000))
+    end)
+  end
 
   defp formatted_time_series([], _sketch, "Linear") do
     end_ts = System.os_time(:second)

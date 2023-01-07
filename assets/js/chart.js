@@ -52,7 +52,7 @@ function safe_to_fixed(number, decimals) {
   return number && number.toFixed(decimals)
 }
 
-function create_chart(chartEl, data, scale) {
+function make_opts(id, scale) {
   let rect = { width: window.innerWidth * 0.8, height: 600 };
 
   let scaler = null;
@@ -63,10 +63,9 @@ function create_chart(chartEl, data, scale) {
   } else if (scale == "Log2") {
     scaler = (x) => x && Math.pow(2, x)
   }
-  // let existing = document.getElementById("chart1");
-  // existing && existing.remove();
 
-  let opts = {
+  return {
+    id: id + "-chart",
     width: rect.width,
     height: rect.height,
     labelSize: 10,
@@ -126,8 +125,17 @@ function create_chart(chartEl, data, scale) {
       },
     ]
   };
+}
 
-  chart = new uPlot(opts, data, chartEl);
+export class HistoChart {
+  constructor(chartEl, data, scale) {
+    let opts = make_opts(chartEl.id, scale)
+    this.uplotChart = new uPlot(opts, data, chartEl);
+  }
+
+  updateData(quantile_data, scale) {
+    this.uplotChart.setData(quantile_data, scale)
+  }
 }
 
 let scale = "";
@@ -137,13 +145,14 @@ export const ChartData = {
     let chartEl = this.el.parentElement.querySelector('.chart');
     scale = JSON.parse(chartEl.dataset.scale);
     let quantile_data = JSON.parse(chartEl.dataset.quantile);
-    create_chart(chartEl, quantile_data, scale);
+    this.chart = new HistoChart(chartEl, quantile_data, scale);
   },
   updated() {
     let new_scale = JSON.parse(this.el.dataset.scale);
     if (scale == new_scale) {
       let quantile_data = JSON.parse(this.el.dataset.quantile);
-      chart.setData(quantile_data, scale);
+      console.log(this.chart);
+      this.chart.updateData(quantile_data, scale);
     } else {
       this.mounted();
     }

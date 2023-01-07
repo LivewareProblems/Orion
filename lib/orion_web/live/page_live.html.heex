@@ -71,21 +71,6 @@
   </div>
 </section>
 
-<div class="w-full pt-4 px-4 mx-auto pb-4 flex flex-col justify-center">
-  <h3 class="text-center">
-    <%= "#{@match_spec.module_name}.#{@match_spec.function_name}/#{@match_spec.arity}" %>
-  </h3>
-  <div
-    id="chart"
-    class="chart mx-auto h-full w-full text-black px-20 py-2"
-    data-quantile={@quantile_data}
-    data-scale={@scale}
-    phx-hook="ChartData"
-    phx-update="ignore"
-  >
-  </div>
-</div>
-
 <%= for %{name: name, key: key} <- @chart_list do %>
-  <%= live_render(@socket, OrionWeb.ChartLive, id: name, session: %{"key" => key}) %>
+  <%= live_render(@socket, OrionWeb.ChartLive, id: "#{name}-#{key}", session: %{"key" => key}) %>
 <% end %>

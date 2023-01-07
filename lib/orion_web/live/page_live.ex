@@ -59,11 +59,11 @@ defmodule OrionWeb.PageLive do
     fake_data = query["fake_data"] == "true"
     scale = "Linear"
 
-    old_mfa = Orion.MatchSpec.mfa(socket.assigns.match_spec)
-    OrionCollector.Tracer.pause_trace(old_mfa, socket.assigns.self_profile)
+    # old_mfa = Orion.MatchSpec.mfa(socket.assigns.match_spec)
+    # OrionCollector.Tracer.pause_trace(old_mfa, socket.assigns.self_profile)
 
-    :pg.get_members({Orion, old_mfa})
-    |> Enum.map(fn pid -> OrionCollector.Tracer.stop(pid) end)
+    # :pg.get_members({Orion, old_mfa})
+    # |> Enum.map(fn pid -> OrionCollector.Tracer.stop(pid) end)
 
     quantile_data = formatted_time_series([], DogSketch.SimpleDog.new(), scale)
 
@@ -73,7 +73,10 @@ defmodule OrionWeb.PageLive do
       arity: query["arity"]
     }
 
-    Orion.MatchSpecDB.new(socket.assigns.current_key, new_match_spec)
+    Orion.MatchSpecDB.new(socket.assigns.current_key, new_match_spec, %{
+      self_profile: query["self_profile"] == "true",
+      fake_data: query["fake_data"] == "true"
+    })
 
     data = %{
       match_spec: new_match_spec,
