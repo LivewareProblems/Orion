@@ -88,6 +88,7 @@ defmodule OrionWeb.ChartLive do
   @impl true
   def handle_info({:ddsketch, data}, socket) do
     new_ddsketch = DogSketch.SimpleDog.merge(data, socket.assigns.ddsketch)
+
     {:noreply, assign(socket, :ddsketch, new_ddsketch)}
   end
 
@@ -98,6 +99,9 @@ defmodule OrionWeb.ChartLive do
       SimpleDog.insert(acc, :rand.uniform(1_000))
     end)
   end
+
+  # thx derek <3
+  # https://github.com/spawnfest/beamwork
 
   defp formatted_time_series([], _sketch, "Linear") do
     end_ts = System.os_time(:second)
