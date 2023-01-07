@@ -46,6 +46,7 @@ defmodule OrionWeb do
     quote do
       use Phoenix.LiveView,
         layout: {OrionWeb.LayoutView, "live.html"}
+
       import Phoenix.Component
 
       unquote(view_helpers())

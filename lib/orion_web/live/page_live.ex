@@ -6,6 +6,10 @@ defmodule OrionWeb.PageLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    if connected?(socket) do
+      Orion.MatchSpecDB.init()
+    end
+
     empty_dd = DogSketch.SimpleDog.new()
     scale = "Linear"
 
@@ -13,6 +17,7 @@ defmodule OrionWeb.PageLive do
 
     data = %{
       match_spec: %MatchSpec{},
+      chart_list: [],
       fake_data: false,
       quantile_data: Jason.encode!(quantile_data),
       quantile_data_raw: quantile_data,
@@ -26,7 +31,8 @@ defmodule OrionWeb.PageLive do
         arity: 0,
         fake: "false",
         self: "false"
-      }
+      },
+      current_key: 1
     }
 
     {:ok, assign(socket, data)}
@@ -67,8 +73,18 @@ defmodule OrionWeb.PageLive do
       arity: query["arity"]
     }
 
+    Orion.MatchSpecDB.new(socket.assigns.current_key, new_match_spec)
+
     data = %{
       match_spec: new_match_spec,
+      chart_list: [
+        %{
+          name:
+            "#{new_match_spec.module_name}-#{new_match_spec.function_name}-#{new_match_spec.arity}",
+          key: socket.assigns.current_key
+        }
+        | socket.assigns.chart_list
+      ],
       fake_data: fake_data,
       quantile_data: Jason.encode!(quantile_data),
       quantile_data_raw: quantile_data,
@@ -82,7 +98,8 @@ defmodule OrionWeb.PageLive do
         arity: 0,
         fake: "false",
         self: "false"
-      }
+      },
+      current_key: socket.assigns.current_key + 1
     }
 
     Process.send_after(self(), :update_data, 1_000)

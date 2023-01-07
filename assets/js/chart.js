@@ -52,7 +52,7 @@ function safe_to_fixed(number, decimals) {
   return number && number.toFixed(decimals)
 }
 
-function create_chart(data, scale) {
+function create_chart(chartEl, data, scale) {
   let rect = { width: window.innerWidth * 0.8, height: 600 };
 
   let scaler = null;
@@ -63,11 +63,10 @@ function create_chart(data, scale) {
   } else if (scale == "Log2") {
     scaler = (x) => x && Math.pow(2, x)
   }
-  let existing = document.getElementById("chart1");
-  existing && existing.remove();
+  // let existing = document.getElementById("chart1");
+  // existing && existing.remove();
 
   let opts = {
-    id: "chart1",
     width: rect.width,
     height: rect.height,
     labelSize: 10,
@@ -128,16 +127,17 @@ function create_chart(data, scale) {
     ]
   };
 
-  chart = new uPlot(opts, data, document.getElementById("chart"));
+  chart = new uPlot(opts, data, chartEl);
 }
 
 let scale = "";
 
 export const ChartData = {
   mounted() {
-    scale = JSON.parse(this.el.dataset.scale);
-    let quantile_data = JSON.parse(this.el.dataset.quantile);
-    create_chart(quantile_data, scale);
+    let chartEl = this.el.parentElement.querySelector('.chart');
+    scale = JSON.parse(chartEl.dataset.scale);
+    let quantile_data = JSON.parse(chartEl.dataset.quantile);
+    create_chart(chartEl, quantile_data, scale);
   },
   updated() {
     let new_scale = JSON.parse(this.el.dataset.scale);

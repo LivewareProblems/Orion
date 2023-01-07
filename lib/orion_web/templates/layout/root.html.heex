@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <%= csrf_meta_tag() %>
+    <.live_title prefix="Orion - "><%= assigns[:page_title] || "Orion" %></.live_title>
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css")} />
+    <script
+      defer
+      phx-track-static
+      type="text/javascript"
+      src={Routes.static_path(@conn, "/js/app.js")}
+    >
+    </script>
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <%= csrf_meta_tag() %>
-  <.live_title prefix="Orion - "> <%= assigns[:page_title] || "Orion" %> </.live_title>
-  <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css" )} />
-  <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/js/app.js" )}></script>
-</head>
-
-<body class="bg-white">
-  <header class="m-8 max-2-screen-xl w-11/12 mx-auto text-4xl text-center font-bold">
-    <a href="https://github.com/spawnfest/Orion" target="_blank"> Orion </a>
-  </header>
-  <%= @inner_content %>
-</body>
-
+  <body class="bg-white">
+    <header class="m-8 max-2-screen-xl w-11/12 mx-auto text-4xl text-center font-bold">
+      <a href="https://github.com/spawnfest/Orion" target="_blank"> Orion </a>
+    </header>
+    <%= @inner_content %>
+  </body>
 </html>
