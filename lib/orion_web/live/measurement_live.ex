@@ -1,7 +1,6 @@
 defmodule OrionWeb.ChartLive do
   use OrionWeb, :live_view
 
-  alias Orion.MatchSpec
   alias DogSketch.SimpleDog
 
   @impl true
@@ -31,8 +30,12 @@ defmodule OrionWeb.ChartLive do
 
     quantile_data = formatted_time_series([], empty_dd, scale)
 
-    %{match_spec: match_spec, ms_options: %{self_profile: self_profile, fake_data: fake}} =
-      Orion.MatchSpecDB.get(key)
+    %{
+      match_spec: match_spec,
+      ms_options: %{self_profile: self_profile, fake_data: fake, pause_state: pause_state}
+    } = Orion.MatchSpecDB.get(key)
+
+    Orion.SessionPubsub.register(:default_session)
 
     socket =
       socket
@@ -40,7 +43,7 @@ defmodule OrionWeb.ChartLive do
         quantile_data: Jason.encode!(quantile_data),
         quantile_data_raw: quantile_data,
         scale: Jason.encode!(scale),
-        pause_state: nil,
+        pause_state: pause_state,
         ddsketch: empty_dd,
         fake_data: fake,
         self_profile: self_profile,
@@ -54,7 +57,8 @@ defmodule OrionWeb.ChartLive do
       unless fake do
         OrionCollector.Tracer.start_all_node_tracers(
           Orion.MatchSpec.mfa(match_spec),
-          self_profile
+          self_profile,
+          pause_state
         )
       end
     end
@@ -62,6 +66,9 @@ defmodule OrionWeb.ChartLive do
     {:ok, socket}
   end
 
+  # Every tick, restart the timer, format the data in the ddsketch and push it
+  # to the client. Then reset the ddsketch.
+  # If fake data is wanted, it is generated now
   @impl true
   def handle_info(:update_data, socket) do
     Process.send_after(self(), :update_data, 1_000)
@@ -85,6 +92,7 @@ defmodule OrionWeb.ChartLive do
     {:noreply, socket}
   end
 
+  # Receive a ddsketch from a tracer, merge it in the current state
   @impl true
   def handle_info({:ddsketch, data}, socket) do
     new_ddsketch = DogSketch.SimpleDog.merge(data, socket.assigns.ddsketch)
@@ -92,6 +100,29 @@ defmodule OrionWeb.ChartLive do
     {:noreply, assign(socket, :ddsketch, new_ddsketch)}
   end
 
+  # Receive a start message
+  @impl true
+  def handle_info({:broadcast, :start}, socket) do
+    OrionCollector.Tracer.restart_trace(
+      Orion.MatchSpec.mfa(socket.assigns.match_spec),
+      socket.assigns.self_profile
+    )
+
+    {:noreply, assign(socket, :pause_state, :running)}
+  end
+
+  # Receive a pause message
+  @impl true
+  def handle_info({:broadcast, :pause}, socket) do
+    OrionCollector.Tracer.pause_trace(
+      Orion.MatchSpec.mfa(socket.assigns.match_spec),
+      socket.assigns.self_profile
+    )
+
+    {:noreply, assign(socket, :pause_state, :paused)}
+  end
+
+  # -- UTILS --
   @one_minute_in_sec 60
 
   defp get_fake_data() do

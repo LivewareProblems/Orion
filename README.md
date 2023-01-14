@@ -15,7 +15,8 @@ It is meant to be used as a library in part of your existing application.
 - [x] Can show a graph of fake or real data
 - [x] Can change the function traced to a new one
 - [x] Can get trace data in a distributed way
-- [ ] Can trace multiple MFA
+- [x] Can trace multiple MFA
+- [ ] Can trace the same match_spec on multipel graph (broken rn)
 - [ ] Can use arguments match_specs
 - [ ] More to come !
 

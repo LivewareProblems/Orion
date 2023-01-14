@@ -3,15 +3,29 @@ defmodule OrionWeb.PageLive do
 
   alias Orion.MatchSpec
 
+  @moduledoc """
+  This is the central LiveView for the Orion UI.
+
+  It handles the form to pass a matchspec, store then in the Orion.MatchSpecDB,
+  then start the chart as needed by passing the ref to that line to the chart liveview
+  in the sessions.
+
+  It also handles pause/start
+
+  It owns the ETS table of the Orion.MatchSpecDB
+  TODO: change this, to allow multiple users at once
+
+  """
   @impl true
   def mount(_params, _session, socket) do
     if connected?(socket) do
       Orion.MatchSpecDB.init()
+      Orion.SessionPubsub.init()
     end
 
     data = %{
       chart_list: [],
-      pause_state: nil,
+      pause_state: :waiting,
       form_value: %{
         module: "",
         function: "",
@@ -55,9 +69,16 @@ defmodule OrionWeb.PageLive do
       arity: query["arity"]
     }
 
+    new_pause_state =
+      case socket.assigns.pause_state do
+        :waiting -> :start
+        status -> status
+      end
+
     Orion.MatchSpecDB.new(socket.assigns.current_key, new_match_spec, %{
       self_profile: query["self_profile"] == "true",
-      fake_data: query["fake_data"] == "true"
+      fake_data: query["fake_data"] == "true",
+      start_pause_status: new_pause_state
     })
 
     data = %{
@@ -70,7 +91,6 @@ defmodule OrionWeb.PageLive do
         }
         | socket.assigns.chart_list
       ],
-      pause_state: :running,
       form_value: %{
         module: "",
         function: "",
@@ -78,7 +98,8 @@ defmodule OrionWeb.PageLive do
         fake: "false",
         self: "false"
       },
-      current_key: socket.assigns.current_key + 1
+      current_key: socket.assigns.current_key + 1,
+      pause_state: new_pause_state
     }
 
     socket = assign(socket, data)
@@ -88,42 +109,31 @@ defmodule OrionWeb.PageLive do
 
   @impl true
   def handle_event("start_pause_submit", _, socket) do
-    # TODO move this into the chart lv
-    # socket =
-    #   case socket.assigns.pause_state do
-    #     :paused ->
-    #       :running
-    #       empty_dd = DogSketch.SimpleDog.new()
+    # we use a Map get because there may be _no_ :pause_state state, as we initialise it lazily.
+    socket =
+      case socket.assigns.pause_state do
+        :paused ->
+          OrionCollector.Tracer.restart_trace(
+            Orion.MatchSpec.mfa(socket.assigns.match_spec),
+            socket.assigns.self_profile
+          )
 
-    #       quantile_data = formatted_time_series([], empty_dd, "Linear")
+          Orion.SessionPubsub.dispatch(:default_session, :start)
 
-    #       data = %{
-    #         quantile_data: Jason.encode!(quantile_data),
-    #         quantile_data_raw: quantile_data,
-    #         pause_state: :running,
-    #         ddsketch: empty_dd
-    #       }
+          assign(socket, :pause_state, :running)
 
-    #       OrionCollector.Tracer.restart_trace(
-    #         Orion.MatchSpec.mfa(socket.assigns.match_spec),
-    #         socket.assigns.self_profile
-    #       )
+        :running ->
+          OrionCollector.Tracer.pause_trace(
+            Orion.MatchSpec.mfa(socket.assigns.match_spec),
+            socket.assigns.self_profile
+          )
 
-    #       Process.send_after(self(), :update_data, 1_000)
+          Orion.SessionPubsub.dispatch(:default_session, :pause)
+          assign(socket, :pause_state, :paused)
 
-    #       assign(socket, data)
-
-    #     :running ->
-    #       OrionCollector.Tracer.pause_trace(
-    #         Orion.MatchSpec.mfa(socket.assigns.match_spec),
-    #         socket.assigns.self_profile
-    #       )
-
-    #       assign(socket, :pause_state, :paused)
-
-    #     _ ->
-    #       socket
-    #   end
+        _ ->
+          socket
+      end
 
     {:noreply, socket}
   end
