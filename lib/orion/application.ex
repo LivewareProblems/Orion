@@ -11,6 +11,7 @@ defmodule Orion.Application do
       OrionWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Orion.PubSub},
+      {Registry, keys: :duplicate, name: Orion.SessionPubsub},
       # Start the Endpoint (http/https)
       OrionWeb.Endpoint
       # Start a worker by calling: Orion.Worker.start_link(arg)

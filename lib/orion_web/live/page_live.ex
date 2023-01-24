@@ -12,31 +12,30 @@ defmodule OrionWeb.PageLive do
 
   It also handles pause/start
 
-  It owns the ETS table of the Orion.MatchSpecDB
   TODO: change this, to allow multiple users at once
 
   """
   @impl true
   def mount(_params, _session, socket) do
-    if connected?(socket) do
-      Orion.MatchSpecDB.init()
-      Orion.SessionPubsub.init()
-    end
+    session_id = :crypto.strong_rand_bytes(20) |> Base.encode64()
 
-    data = %{
-      chart_list: [],
-      pause_state: :waiting,
-      form_value: %{
-        module: "",
-        function: "",
-        arity: 0,
-        fake: "false",
-        self: "false"
-      },
-      current_key: 1
-    }
+    socket =
+      socket
+      |> assign_new(:chart_list, fn -> [] end)
+      |> assign_new(:pause_state, fn -> :waiting end)
+      |> assign_new(:form_value, fn ->
+        %{
+          module: "",
+          function: "",
+          arity: 0,
+          fake: "false",
+          self: "false"
+        }
+      end)
+      |> assign_new(:current_key, 1)
+      |> assign_new(:session_id, session_id)
 
-    {:ok, assign(socket, data)}
+    {:ok, socket}
   end
 
   @impl true
@@ -57,12 +56,6 @@ defmodule OrionWeb.PageLive do
 
   @impl true
   def handle_event("query_submit", %{"match_spec" => query}, socket) do
-    # old_mfa = Orion.MatchSpec.mfa(socket.assigns.match_spec)
-    # OrionCollector.Tracer.pause_trace(old_mfa, socket.assigns.self_profile)
-
-    # :pg.get_members({Orion, old_mfa})
-    # |> Enum.map(fn pid -> OrionCollector.Tracer.stop(pid) end)
-
     new_match_spec = %MatchSpec{
       module_name: query["module_name"],
       function_name: query["function_name"],
@@ -75,11 +68,13 @@ defmodule OrionWeb.PageLive do
         status -> status
       end
 
-    Orion.MatchSpecDB.new(socket.assigns.current_key, new_match_spec, %{
-      self_profile: query["self_profile"] == "true",
-      fake_data: query["fake_data"] == "true",
-      start_pause_status: new_pause_state
-    })
+    session =
+      Orion.MatchSpecStore.new(socket.assigns.current_key, new_match_spec, %{
+        self_profile: query["self_profile"] == "true",
+        fake_data: query["fake_data"] == "true",
+        start_pause_status: new_pause_state,
+        id: socket.assigns.session_id
+      })
 
     data = %{
       match_spec: new_match_spec,
@@ -87,7 +82,8 @@ defmodule OrionWeb.PageLive do
         %{
           name:
             "#{new_match_spec.module_name}-#{new_match_spec.function_name}-#{new_match_spec.arity}",
-          key: socket.assigns.current_key
+          key: socket.assigns.current_key,
+          session: session
         }
         | socket.assigns.chart_list
       ],

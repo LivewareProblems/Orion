@@ -24,7 +24,7 @@ defmodule OrionWeb.ChartLive do
   end
 
   @impl true
-  def mount(_params, %{"key" => key}, socket) do
+  def mount(_params, %{"key" => session}, socket) do
     empty_dd = SimpleDog.new()
     scale = "Linear"
 
@@ -32,10 +32,12 @@ defmodule OrionWeb.ChartLive do
 
     %{
       match_spec: match_spec,
-      ms_options: %{self_profile: self_profile, fake_data: fake, pause_state: pause_state}
-    } = Orion.MatchSpecDB.get(key)
+      ms_options: %{self_profile: self_profile, fake_data: fake, pause_state: pause_state},
+      key: key,
+      id: pubsub_id
+    } = Orion.MatchSpecStore.get(session)
 
-    Orion.SessionPubsub.register(:default_session)
+    Orion.SessionPubsub.register(pubsub_id)
 
     socket =
       socket

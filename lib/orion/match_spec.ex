@@ -16,4 +16,20 @@ defmodule Orion.MatchSpec do
   def mfa(%Orion.MatchSpec{}) do
     nil
   end
+
+  def to_phxlv_session(%__MODULE__{} = ms) do
+    %{
+      "module_name" => ms.module_name,
+      "function_name" => ms.function_name,
+      "arity" => ms.arity
+    }
+  end
+
+  def from_phxlv_session(session_ms) do
+    mfa(%Orion.MatchSpec{
+      module_name: session_ms["module_name"],
+      function_name: session_ms["function_name"],
+      arity: session_ms["arity"]
+    })
+  end
 end
