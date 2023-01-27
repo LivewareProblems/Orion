@@ -5,7 +5,7 @@ defmodule Orion.MatchSpecStore do
   @type ms_options :: %{
           self_profile: boolean(),
           fake_data: boolean(),
-          pause_state: :running | :paused,
+          start_pause_status: :running | :paused,
           id: String.t()
         }
   @type session :: map()
@@ -17,7 +17,7 @@ defmodule Orion.MatchSpecStore do
         ms_options \\ %{
           self_profile: false,
           fake_data: false,
-          pause_state: :running,
+          start_pause_status: :running,
           id: "default"
         }
       ) do
@@ -36,15 +36,15 @@ defmodule Orion.MatchSpecStore do
       }) do
     %{
       match_spec: MatchSpec.from_phxlv_session(match_spec),
-      ms_options: ms_options_to_phxlv_session(ms_options),
-      key: String.to_integer(key)
+      ms_options: from_phxlv_to_ms_options(ms_options),
+      key: key
     }
   end
 
   def ms_options_to_phxlv_session(%{
         self_profile: self,
         fake_data: fake,
-        pause_state: state,
+        start_pause_status: state,
         id: id
       }) do
     %{
@@ -62,9 +62,9 @@ defmodule Orion.MatchSpecStore do
         "id" => id
       }) do
     %{
-      self_profile: string_to_boolean(self),
-      fake_data: string_to_boolean(fake),
-      pause_state: state,
+      self_profile: self,
+      fake_data: fake,
+      start_pause_status: state,
       id: id
     }
   end

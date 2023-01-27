@@ -26,10 +26,10 @@ defmodule Orion.MatchSpec do
   end
 
   def from_phxlv_session(session_ms) do
-    mfa(%Orion.MatchSpec{
+    %Orion.MatchSpec{
       module_name: session_ms["module_name"],
       function_name: session_ms["function_name"],
       arity: session_ms["arity"]
-    })
+    }
   end
 end

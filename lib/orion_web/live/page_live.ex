@@ -32,8 +32,8 @@ defmodule OrionWeb.PageLive do
           self: "false"
         }
       end)
-      |> assign_new(:current_key, 1)
-      |> assign_new(:session_id, session_id)
+      |> assign_new(:current_key, fn -> 1 end)
+      |> assign_new(:session_id, fn -> session_id end)
 
     {:ok, socket}
   end
@@ -64,7 +64,7 @@ defmodule OrionWeb.PageLive do
 
     new_pause_state =
       case socket.assigns.pause_state do
-        :waiting -> :start
+        :waiting -> :running
         status -> status
       end
 
@@ -109,22 +109,12 @@ defmodule OrionWeb.PageLive do
     socket =
       case socket.assigns.pause_state do
         :paused ->
-          OrionCollector.Tracer.restart_trace(
-            Orion.MatchSpec.mfa(socket.assigns.match_spec),
-            socket.assigns.self_profile
-          )
-
-          Orion.SessionPubsub.dispatch(:default_session, :start)
+          Orion.SessionPubsub.dispatch(socket.assigns.session_id, :start)
 
           assign(socket, :pause_state, :running)
 
         :running ->
-          OrionCollector.Tracer.pause_trace(
-            Orion.MatchSpec.mfa(socket.assigns.match_spec),
-            socket.assigns.self_profile
-          )
-
-          Orion.SessionPubsub.dispatch(:default_session, :pause)
+          Orion.SessionPubsub.dispatch(socket.assigns.session_id, :pause)
           assign(socket, :pause_state, :paused)
 
         _ ->
@@ -133,8 +123,6 @@ defmodule OrionWeb.PageLive do
 
     {:noreply, socket}
   end
-
-  @one_minute_in_sec 60
 
   def pause_state_text(atom) do
     case atom do

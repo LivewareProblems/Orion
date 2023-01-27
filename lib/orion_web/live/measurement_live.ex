@@ -1,4 +1,4 @@
-defmodule OrionWeb.ChartLive do
+defmodule OrionWeb.MeasurementLive do
   use OrionWeb, :live_view
 
   alias DogSketch.SimpleDog
@@ -32,9 +32,13 @@ defmodule OrionWeb.ChartLive do
 
     %{
       match_spec: match_spec,
-      ms_options: %{self_profile: self_profile, fake_data: fake, pause_state: pause_state},
-      key: key,
-      id: pubsub_id
+      ms_options: %{
+        self_profile: self_profile,
+        fake_data: fake,
+        start_pause_status: pause_state,
+        id: pubsub_id
+      },
+      key: key
     } = Orion.MatchSpecStore.get(session)
 
     Orion.SessionPubsub.register(pubsub_id)
@@ -73,7 +77,9 @@ defmodule OrionWeb.ChartLive do
   # If fake data is wanted, it is generated now
   @impl true
   def handle_info(:update_data, socket) do
-    Process.send_after(self(), :update_data, 1_000)
+    if socket.assigns.pause_state == :running do
+      Process.send_after(self(), :update_data, 1_000)
+    end
 
     sketch =
       if socket.assigns.fake_data do
@@ -110,14 +116,18 @@ defmodule OrionWeb.ChartLive do
       socket.assigns.self_profile
     )
 
+    Process.send_after(self(), :update_data, 1_000)
+
     {:noreply, assign(socket, :pause_state, :running)}
   end
 
   # Receive a pause message
   @impl true
   def handle_info({:broadcast, :pause}, socket) do
+    IO.inspect("start/pause")
+
     OrionCollector.Tracer.pause_trace(
-      Orion.MatchSpec.mfa(socket.assigns.match_spec),
+      IO.inspect(Orion.MatchSpec.mfa(socket.assigns.match_spec)),
       socket.assigns.self_profile
     )
 

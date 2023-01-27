@@ -72,5 +72,8 @@
 </section>
 
 <%= for %{name: name, key: key, session: session} <- @chart_list do %>
-  <%= live_render(@socket, OrionWeb.ChartLive, id: "#{name}-#{key}", session: %{"key" => session}) %>
+  <%= live_render(@socket, OrionWeb.MeasurementLive,
+    id: "#{name}-#{key}",
+    session: %{"key" => session}
+  ) %>
 <% end %>
