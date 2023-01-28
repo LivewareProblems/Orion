@@ -33,18 +33,16 @@ defmodule Orion.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.2"},
+      # Actual deps
       {:phoenix_live_view, "~> 0.18.0"},
-      {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_html, "~> 3.1"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:telemetry_metrics, "~> 0.6.1"},
-      {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
       {:dog_sketch, "~> 0.1.2"},
-      {:orion_collector, git: "git@github.com:DianaOlympos/orion_collector.git", ref: "main"}
+      {:orion_collector, git: "git@github.com:DianaOlympos/orion_collector.git", ref: "main"},
+
+      # dev and test
+      {:floki, ">= 0.30.0", only: :test},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:jason, "~> 1.0", only: [:dev, :test, :docs]},
+      {:plug_cowboy, "~> 2.0", only: :dev}
     ]
   end
 
