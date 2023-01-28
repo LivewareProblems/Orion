@@ -56,7 +56,8 @@ defmodule Orion.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "cmd yarn install --cwd assets"]
+      setup: ["deps.get", "cmd npm install --cwd assets"],
+      dev: "run --no-halt dev.exs"
     ]
   end
 end

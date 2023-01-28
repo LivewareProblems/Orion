@@ -11,7 +11,6 @@ use Mix.Config
 config :orion, OrionWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "/AlsXZICxnL/Lp3Qo4Z74blNgAB2WCkqwpwrg9pW9kMeAOJ/Efdqi4BB3cuoh4vo",
-  render_errors: [view: OrionWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Orion.PubSub,
   live_view: [signing_salt: "CuaBSTgW"]
 

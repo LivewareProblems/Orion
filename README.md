@@ -24,7 +24,8 @@ It is meant to be used as a library in part of your existing application.
 
 - Be useable in any BEAM language. This may happen in the future but for now we
   depend on dog_sketch which is in elixir
-- separate frontend and data collection library. That may come in the future.
+- Making it easy to run the UI locally and connect remotely to a cluster. This may come in the future or in a paid extension. If you are interested, [contact me on the Elixir Forum](https://elixirforum.com/u/dianaolympos/summary)
+- Session handling, in particular personal auth, and more. This may come in the future or in a paid extension. If you are interested, [contact me on the Elixir Forum](https://elixirforum.com/u/dianaolympos/summary)
 
 ## TODO add how to add it to your app
 
@@ -38,11 +39,11 @@ To start your Phoenix server:
 
 - Install dependencies with `mix deps.get`
 
-Test can be run with `mix test`. We try to keep everything in the elixir side tested fairly completely
+Test can be run with `mix test`.
 
 If you want to see it in action
 
 - Install Node.js dependencies with `npm install --cwd assets` inside the `assets` directory
-- Start Phoenix endpoint with `mix phx.server`
+- Start the development endpoint with `mix dev`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Now you can visit [`localhost:4001`](http://localhost:4001) from your browser.

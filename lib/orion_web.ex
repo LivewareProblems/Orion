@@ -22,7 +22,6 @@ defmodule OrionWeb do
       use Phoenix.Controller, namespace: OrionWeb
 
       import Plug.Conn
-      import OrionWeb.Gettext
       alias OrionWeb.Router.Helpers, as: Routes
     end
   end
@@ -74,7 +73,6 @@ defmodule OrionWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import OrionWeb.Gettext
     end
   end
 
@@ -90,7 +88,6 @@ defmodule OrionWeb do
       import Phoenix.View
 
       import OrionWeb.ErrorHelpers
-      import OrionWeb.Gettext
       alias OrionWeb.Router.Helpers, as: Routes
     end
   end
