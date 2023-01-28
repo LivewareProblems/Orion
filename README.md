@@ -16,7 +16,7 @@ It is meant to be used as a library in part of your existing application.
 - [x] Can change the function traced to a new one
 - [x] Can get trace data in a distributed way
 - [x] Can trace multiple MFA
-- [ ] Can trace the same match_spec on multipel graph (broken rn)
+- [x] Can trace the same match_spec on multipel graph
 - [ ] Can use arguments match_specs
 - [ ] More to come !
 

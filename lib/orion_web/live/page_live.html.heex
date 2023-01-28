@@ -1,9 +1,9 @@
 <section class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12">
-  <div class="flex flex-row justify-evenly px-2">
+  <div class="flex flex-row justify-center">
     <.form for={:start_pause} phx-submit="start_pause_submit" class="self-stretch flex flex-row">
       <%= submit(pause_state_text(@pause_state),
         class:
-          "self-center w-30 rounded py-2 px-3 mr-3 my-3 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"
+          "self-end w-30 rounded py-2 px-3 mr-3 mb-4 bg-teal-60 text-white hover:bg-dusk-50 hover:text-black"
       ) %>
     </.form>
 
@@ -12,7 +12,7 @@
       for={:match_spec}
       phx-submit="query_submit"
       phx-change="query_validate"
-      class="flex flex-row justify-between flex-wrap px-2"
+      class="flex flex-row justify-between flex-wrap"
     >
       <div class="flex flex-col flex-grow">
         <%= label(f, :module_name, "Module", class: "text-black mx-3 my-2 font-medium") %>
@@ -40,7 +40,7 @@
           value: @form_value.arity,
           placeholder: "Arity",
           class:
-            "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-2 mb-3 leading-tight focus:outline-none"
+            "max-w-[5rem] border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-2 mb-3 leading-tight focus:outline-none"
         ) %>
       </div>
 
@@ -49,7 +49,7 @@
         <%= checkbox(f, :fake_data,
           value: @form_value.fake,
           class:
-            "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-4 mb-3 leading-tight focus:outline-none"
+            "mt-2 border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-4 leading-tight focus:outline-none"
         ) %>
       </div>
 
@@ -58,22 +58,25 @@
         <%= checkbox(f, :self_profile,
           value: @form_value.self,
           class:
-            "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-4 mb-3 leading-tight focus:outline-none"
+            "mt-2 border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-4 leading-tight focus:outline-none"
         ) %>
       </div>
 
       <%= submit("Run",
         "phx-disable-with": "Setting up Trace...",
         class:
-          "self-stretch w-15 rounded font-old py-2 px-2 mr-4 my-3 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"
+          "self-end rounded py-3 px-4 mt-3 mb-4 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"
       ) %>
     </.form>
   </div>
 </section>
 
-<%= for %{name: name, key: key, session: session} <- @chart_list do %>
-  <%= live_render(@socket, OrionWeb.MeasurementLive,
-    id: "#{name}-#{key}",
-    session: %{"key" => session}
-  ) %>
-<% end %>
+<section id="chart-list" class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12">
+  <% IO.inspect(@chart_list, label: "wat") %>
+  <%= for %{name: name, key: key, session: session} <- @chart_list do %>
+    <%= live_render(@socket, OrionWeb.MeasurementLive,
+      id: "#{name}-#{key}",
+      session: %{"key" => session}
+    ) %>
+  <% end %>
+</section>

@@ -7,12 +7,20 @@ defmodule OrionWeb.MeasurementLive do
   def render(assigns) do
     ~H"""
     <div class="w-full pt-4 px-4 mx-auto pb-4 flex flex-col justify-center">
-      <h3 class="text-center">
-        <%= "#{@match_spec.module_name}.#{@match_spec.function_name}/#{@match_spec.arity}" %>
-      </h3>
+      <div class="">
+        <.form for={:remove} phx-submit="remove" class="float-left">
+          <%= submit("Remove trace",
+            class:
+              "w-30 rounded py-2 px-2 my-3 bg-red-30 text-black focus:bg-red-80 focus:text-white hover:bg-red-80 hover:text-white"
+          ) %>
+        </.form>
+        <h3 class="mt-4 text-center">
+          <%= "#{@match_spec.module_name}.#{@match_spec.function_name}/#{@match_spec.arity}" %>
+        </h3>
+      </div>
       <div
         id={"livechart-#{@key}"}
-        class="chart mx-auto h-full w-full text-black px-20 py-2"
+        class="chart mx-auto h-full w-full text-black py-2"
         data-quantile={@quantile_data}
         data-scale={@scale}
         phx-hook="ChartData"
@@ -69,7 +77,13 @@ defmodule OrionWeb.MeasurementLive do
       end
     end
 
-    {:ok, socket}
+    {:ok, socket, layout: false}
+  end
+
+  @impl true
+  def handle_event("remove", _, socket) do
+    send(socket.parent_pid, {:remove, socket.assigns.key})
+    {:noreply, socket}
   end
 
   # Every tick, restart the timer, format the data in the ddsketch and push it
@@ -124,10 +138,8 @@ defmodule OrionWeb.MeasurementLive do
   # Receive a pause message
   @impl true
   def handle_info({:broadcast, :pause}, socket) do
-    IO.inspect("start/pause")
-
     OrionCollector.Tracer.pause_trace(
-      IO.inspect(Orion.MatchSpec.mfa(socket.assigns.match_spec)),
+      Orion.MatchSpec.mfa(socket.assigns.match_spec),
       socket.assigns.self_profile
     )
 

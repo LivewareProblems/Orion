@@ -15,6 +15,7 @@ defmodule OrionWeb.PageLive do
   TODO: change this, to allow multiple users at once
 
   """
+
   @impl true
   def mount(_params, _session, socket) do
     session_id = :crypto.strong_rand_bytes(20) |> Base.encode64()
@@ -122,6 +123,13 @@ defmodule OrionWeb.PageLive do
       end
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:remove, key}, socket) do
+    chart_list = Enum.reject(socket.assigns.chart_list, fn map -> map.key == key end)
+
+    {:noreply, assign(socket, :chart_list, chart_list)}
   end
 
   def pause_state_text(atom) do

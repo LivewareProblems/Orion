@@ -53,7 +53,7 @@ function safe_to_fixed(number, decimals) {
 }
 
 function make_opts(id, scale) {
-  let rect = { width: window.innerWidth * 0.8, height: 600 };
+  let rect = { width: window.innerWidth * 0.9, height: 600 };
 
   let scaler = null;
   if (scale == "Linear") {
