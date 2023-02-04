@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" phx-socket={live_socket_path(@conn)}>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no"
+    />
+    <meta name="csrf-token" content={Phoenix.Controller.get_csrf_token()} />
+
+    <.live_title prefix="Orion - "><%= assigns[:page_title] || "Orion" %></.live_title>
+    <style nonce={csp_nonce(@conn, :style)}>
+      <%= raw(render("app.css", %{})) %>
+    </style>
+  </head>
+
+  <body class="bg-white">
+    <%= @inner_content %>
+    <script nonce={csp_nonce(@conn, :script)}>
+      <%= raw(render("app.js", %{})) %>
+    </script>
+  </body>
+</html>

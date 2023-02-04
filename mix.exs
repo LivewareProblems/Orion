@@ -1,16 +1,20 @@
 defmodule Orion.MixProject do
   use Mix.Project
 
+  @version "1.0.0"
+
   def project do
     [
       app: :orion,
-      version: "0.1.0",
-      elixir: "~> 1.12",
+      version: "1.0.0",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      name: "Orion",
+      description: "Dynamic Distributed Performance tracing for the BEAM"
     ]
   end
 
@@ -42,7 +46,8 @@ defmodule Orion.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:jason, "~> 1.0", only: [:dev, :test, :docs]},
-      {:plug_cowboy, "~> 2.0", only: :dev}
+      {:plug_cowboy, "~> 2.0", only: :dev},
+      {:esbuild, "~> 0.6.0", only: :dev}
     ]
   end
 
@@ -54,8 +59,12 @@ defmodule Orion.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "cmd npm install --cwd assets"],
-      dev: "run --no-halt dev.exs"
+      setup: ["deps.get", "cmd  --cd assets npm install"],
+      dev: "run --no-halt dev.exs",
+      "assets.build": [
+        "cmd  --cd assets npx postcss css/app.css --env=production --no-map --output=../dist/css/app.css",
+        "esbuild default --minify"
+      ]
     ]
   end
 end

@@ -11,7 +11,7 @@ defmodule Orion.Application do
       # OrionWeb.Telemetry,
       # # Start the PubSub system
       # {Phoenix.PubSub, name: Orion.PubSub},
-      # {Registry, keys: :duplicate, name: Orion.SessionPubsub},
+      {Registry, keys: :duplicate, name: Orion.SessionPubsub}
       # # Start the Endpoint (http/https)
       # OrionWeb.Endpoint
       # Start a worker by calling: Orion.Worker.start_link(arg)
@@ -22,12 +22,5 @@ defmodule Orion.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Orion.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
-  def config_change(changed, _new, removed) do
-    OrionWeb.Endpoint.config_change(changed, removed)
-    :ok
   end
 end

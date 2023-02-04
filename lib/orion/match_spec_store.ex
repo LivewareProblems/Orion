@@ -15,7 +15,7 @@ defmodule Orion.MatchSpecStore do
         key,
         match_spec,
         ms_options \\ %{
-          self_profile: false,
+          self_profile: true,
           fake_data: false,
           start_pause_status: :running,
           id: "default"

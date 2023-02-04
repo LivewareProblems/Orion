@@ -1,5 +1,0 @@
-<main role="main" class="bg-white">
-  <p class="bg-bronze-20 text-bronze-80 rounded relative text-center font-bold" role="alert"><%= get_flash(@conn, :info) %></p>
-  <p class="bg-red-20 text-red-80 rounded relative text-center font-bold" role="alert"><%= get_flash(@conn, :error) %></p>
-  <%= @inner_content %>
-</main>
