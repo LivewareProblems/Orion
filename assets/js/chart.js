@@ -52,8 +52,8 @@ function safe_to_fixed(number, decimals) {
   return number && number.toFixed(decimals)
 }
 
-function make_opts(id, scale) {
-  let rect = { width: window.innerWidth * 0.9, height: 600 };
+function make_opts(parent, scale) {
+  let rect = { width: parent.clientWidth, height: 600 };
 
   let scaler = null;
   if (scale == "Linear") {
@@ -65,7 +65,7 @@ function make_opts(id, scale) {
   }
 
   return {
-    id: id + "-chart",
+    id: parent.id + "-chart",
     width: rect.width,
     height: rect.height,
     labelSize: 10,
@@ -129,7 +129,7 @@ function make_opts(id, scale) {
 
 export class HistoChart {
   constructor(chartEl, data, scale) {
-    let opts = make_opts(chartEl.id, scale)
+    let opts = make_opts(chartEl, scale)
     this.uplotChart = new uPlot(opts, data, chartEl);
   }
 

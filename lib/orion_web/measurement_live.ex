@@ -14,7 +14,7 @@ defmodule OrionWeb.MeasurementLive do
               "w-30 rounded py-2 px-2 my-3 bg-red-30 text-black focus:bg-red-80 focus:text-white hover:bg-red-80 hover:text-white"
           ) %>
         </.form>
-        <h3 class="mt-4 text-center">
+        <h3 class="mt-4 text-center font-bold">
           <%= "#{@match_spec.module_name}.#{@match_spec.function_name}/#{@match_spec.arity}" %>
         </h3>
       </div>

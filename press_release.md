@@ -1,4 +1,4 @@
-Fighting latency Scorpions with Orion
+# Fighting latency Scorpions with Orion
 
 [“It’s slow” is the hardest problem you’ll ever debug.](https://www.somethingsimilar.com/2013/01/14/notes-on-distributed-systems-for-young-bloods/) was written for distributed system, but it is nearly as true for single machine system. It is what i call the Scorpions of latency. While they may not be bugs, as the system may behaving exactly as specified, the tail end of latency problems can be excessively problematic for all kind of systems. (See The Tail at Scale). The tail is dangerous... hence Scorpions instead of bugs.
 
@@ -17,7 +17,11 @@ You are lucky, erlang come with a bunch of them, and Mix helpfully give you a ni
 Profilers work by _instrumenting_ every function call in a system. You then call your system with your input and the profiler return you at the end of the run information about every single function call, how many time it was called and sometimes how much time was spent in each call. That is great and profilers are really helpful.
 
 But profilers have also massive drawbacks.
-1. Profilers are "blind". They cannot get a clue about which part of the query call stack you suspect. That means that they have to instrument everything. That can generate massive impact, making the code running under the profiler run totally differently from production
+
+1. Profilers are "blind". They cannot get a clue about which part of the query
+   call stack you suspect. That means that they have to instrument everything.
+   That can generate massive impact, making the code running under the profiler
+   run totally differently from production
 2. Profilers need to instrument the whole system. This tend to have massive impact on performance, and as such cannot be run in production.
 3. Profilers usually need a restart to be able to instrument the system. This usually means you cannot easily run it in production "as is", making some elusive performance problems really hard to catch
 4. Combining these three, profiling in production would generate a lot of "noise", as every time spent working on other request, which tend to be happening a lot in modern massively concurrent system, would pollute the whole results.
@@ -34,7 +38,6 @@ So. Recon can't do it. Redbug neither. dbg does not offer an easy one. uh. That 
 ## Professor X enter the scene
 
 You are lucky, there is a tool for you. Xprof allows you to connect to the machine and dynamically trace any function and get its call latency in an histogram, live. This means that you can start from the top of the call stack and implement while following your code, dynamically exploring the runtime profile of every function. Rapidly pinpointing the source of the slowdown through feedback become easy.
-
 
 Wait, it sounds amazing, but my request is randomly sent to one of five machine by my load balancer. Can we make this histogram show the calls from every node combined ? So i do not have to pray it hit the one i am tracing ?
 
