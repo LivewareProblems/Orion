@@ -1,16 +1,12 @@
 # Orion
 
-**Warning** This is beta/alpha software. It works, it runs, but it is really rough and there are no tests. You have been warned
-
-## What is Orion ?
-
 Orion is a Dynamic Distributed Profiler. It allows you to profile any function
 in an erlang cluster and get back an histogram representing the profile of the
 function calls across the whole cluster.
 
 It is meant to be used as a library in part of your existing application.
 
-## Goals
+## Roadmap
 
 - [x] Can show a graph of fake or real data
 - [x] Can change the function traced to a new one

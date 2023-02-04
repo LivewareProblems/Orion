@@ -40,7 +40,7 @@ defmodule Orion.MixProject do
       # Actual deps
       {:phoenix_live_view, "~> 0.18.0"},
       {:dog_sketch, "~> 0.1.2"},
-      {:orion_collector, git: "git@github.com:DianaOlympos/orion_collector.git", ref: "main"},
+      {:orion_collector, "~> 1.0.0"},
 
       # dev and test
       {:floki, ">= 0.30.0", only: :test},
