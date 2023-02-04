@@ -13,7 +13,7 @@ you connect to.
 If your applications are connected via Distributed Erlang, then you will get
 a histogram of every call on every node, aggregated.
 
-![screenshot](https://github.com/DianaOlympos/orion/raw/master/screenshot.png)
+![screenshot](https://github.com/DianaOlympos/Orion/raw/main/screenshot.png)
 
 ## Non Goals
 
