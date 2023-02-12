@@ -1,5 +1,7 @@
 # Orion
 
+<!-- MDOC !-->
+
 Orion is a Dynamic Distributed Profiler. It allows you to profile any function
 in a beam cluster and get back an histogram representing the profile of the
 function calls across the whole cluster. Live, with low overhead, making it
