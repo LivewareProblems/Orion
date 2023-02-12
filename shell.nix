@@ -3,7 +3,7 @@
 with pkgs;
 let
   elixir = beam.packages.erlangR25.elixir_1_14;
-  node = nodejs-slim-16_x;
+  node = nodejs-slim-19_x;
 
 in mkShell {
   buildInputs = [ elixir node yarn ] ++ lib.optionals stdenv.isDarwin

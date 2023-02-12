@@ -48,7 +48,8 @@ defmodule Orion.MixProject do
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:jason, "~> 1.0", only: [:dev, :test, :docs]},
       {:plug_cowboy, "~> 2.0", only: :dev},
-      {:esbuild, "~> 0.6.0", only: :dev}
+      {:esbuild, "~> 0.6.0", only: :dev},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 
