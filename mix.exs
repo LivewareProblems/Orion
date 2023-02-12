@@ -10,11 +10,12 @@ defmodule Orion.MixProject do
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
-      compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       name: "Orion",
-      description: "Dynamic Distributed Performance tracing for the BEAM"
+      description: "Dynamic Distributed Performance tracing for the BEAM",
+      package: package(),
+      docs: docs()
     ]
   end
 
@@ -65,6 +66,23 @@ defmodule Orion.MixProject do
         "cmd  --cd assets npx postcss css/app.css --env=production --no-map --output=../dist/css/app.css",
         "esbuild default --minify"
       ]
+    ]
+  end
+
+  defp docs do
+    [
+      main: "Orion",
+      source_ref: "v#{@version}",
+      source_url: "https://github.com/LivewareProblems/Orion"
+    ]
+  end
+
+  defp package do
+    [
+      maintainers: ["Thomas Depierre"],
+      licenses: ["MIT"],
+      links: %{github: "https://github.com/LivewareProblems/Orion"},
+      files: ~w(dist lib CHANGELOG.md LICENSE.md mix.exs README.md)
     ]
   end
 end
