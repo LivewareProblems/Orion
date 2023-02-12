@@ -147,6 +147,8 @@ domain name under the `check_origin` configuration:
 
 Then you should be good to go!
 
+<!-- MDOC !-->
+
 ## Contributing
 
 You need elixir 1.12+ and OTP 24+.
@@ -162,3 +164,7 @@ If you want to see it in action
 - Start the development endpoint with `mix dev`
 
 Now you can visit [`localhost:4001`](http://localhost:4001) from your browser.
+
+## License
+
+MIT License. Copyright (c) 2023 Thomas Depierre.

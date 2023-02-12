@@ -6,13 +6,13 @@ defmodule Orion.MixProject do
   def project do
     [
       app: :orion,
-      version: "1.0.0",
+      version: @version,
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
+      deps: deps(),
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(),
       name: "Orion",
       description: "Dynamic Distributed Performance tracing for the BEAM"
     ]
