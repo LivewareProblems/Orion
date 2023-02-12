@@ -20,7 +20,7 @@ defmodule OrionWeb.PageLive do
   def render(assigns) do
     ~H"""
     <header class="m-8 max-2-screen-xl w-11/12 mx-auto text-4xl text-center font-bold">
-      <a href="https://github.com/DianaOlympos/Orion" target="_blank"> Orion </a>
+      <a href="https://github.com/LivewareProblems/Orion" target="_blank"> Orion </a>
     </header>
     <section class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12" id="trace-form">
       <div class="flex flex-row justify-evenly">

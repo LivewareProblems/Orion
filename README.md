@@ -13,7 +13,7 @@ you connect to.
 If your applications are connected via Distributed Erlang, then you will get
 a histogram of every call on every node, aggregated.
 
-![screenshot](https://github.com/DianaOlympos/Orion/raw/main/screenshot.png)
+![screenshot](https://github.com/LivewareProblems/Orion/raw/main/screenshot.png)
 
 ## Non Goals
 
@@ -21,14 +21,14 @@ a histogram of every call on every node, aggregated.
   depend on dog_sketch which is in elixir
 - Making it easy to run the UI locally and connect remotely to a cluster. This
   may come in the future or in a paid extension. If you are interested, [contact
-  me on the Elixir Forum](https://elixirforum.com/u/dianaolympos/summary). In
+  me on the Elixir Forum](https://elixirforum.com/u/DianaOlympos/summary). In
   the meantime, you can use the `mix dev` local development setup as a starting
   point to do your own. Orion totally work remotely connected with erlang
   distribution, so as long as you can connect to your cluster (and deactivate
   the `:self_profile` option in your endpont), it should just work.
 - Session handling, in particular personal auth, and more. This may come in the
   future or in a paid extension. If you are interested, [contact me on the
-  Elixir Forum](https://elixirforum.com/u/dianaolympos/summary). Refreshes clean
+  Elixir Forum](https://elixirforum.com/u/DianaOlympos/summary). Refreshes clean
   up the UI.
 
 ## Installation
