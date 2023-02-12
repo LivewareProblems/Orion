@@ -1,5 +1,5 @@
 # Orion
-
+[Official Documentation on Hexdoc](https://hexdocs.pm/orion/Orion.html)
 <!-- MDOC !-->
 
 Orion is a Dynamic Distributed Profiler. It allows you to profile any function
