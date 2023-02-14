@@ -1,5 +1,5 @@
 defmodule OrionWeb.Assets do
-  # Plug to serve dependency-specific assets for the dashboard.
+  # Plug to serve dependency-specific assets for Orion.
   @moduledoc false
   import Plug.Conn
 
