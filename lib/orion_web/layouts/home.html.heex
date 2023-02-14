@@ -10,15 +10,11 @@
     <meta name="csrf-token" content={Phoenix.Controller.get_csrf_token()} />
 
     <.live_title prefix="Orion - "><%= assigns[:page_title] || "Orion" %></.live_title>
-    <style nonce={csp_nonce(@conn, :style)}>
-      <%= raw(render("app.css", %{})) %>
-    </style>
+    <link rel="stylesheet" nonce={csp_nonce(@conn, :style)} href={asset_path(@conn, :css)} />
+    <script nonce={csp_nonce(@conn, :script)} src={asset_path(@conn, :js)} defer />
   </head>
 
   <body class="bg-white">
     <%= @inner_content %>
-    <script nonce={csp_nonce(@conn, :script)}>
-      <%= raw(render("app.js", %{})) %>
-    </script>
   </body>
 </html>
