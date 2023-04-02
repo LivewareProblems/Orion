@@ -86,10 +86,14 @@ defmodule OrionWeb.PageLive do
       </div>
     </section>
 
-    <section id="chart-list" class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12">
-      <%= for %{name: name, key: key, session: session} <- @chart_list do %>
+    <section
+      id="chart-list"
+      class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12"
+      phx-update="stream"
+    >
+      <%= for {id, %{session: session}} <- @streams.charts do %>
         <%= live_render(@socket, OrionWeb.MeasurementLive,
-          id: "#{name}-#{key}",
+          id: id,
           session: %{"key" => session}
         ) %>
       <% end %>
@@ -103,7 +107,7 @@ defmodule OrionWeb.PageLive do
 
     socket =
       socket
-      |> assign_new(:chart_list, fn -> [] end)
+      |> stream(:charts, [])
       |> assign_new(:pause_state, fn -> :waiting end)
       |> assign_new(:form_value, fn ->
         %{
@@ -160,15 +164,6 @@ defmodule OrionWeb.PageLive do
 
     data = %{
       match_spec: new_match_spec,
-      chart_list: [
-        %{
-          name:
-            "#{new_match_spec.module_name}-#{new_match_spec.function_name}-#{new_match_spec.arity}",
-          key: socket.assigns.current_key,
-          session: session
-        }
-        | socket.assigns.chart_list
-      ],
       form_value: %{
         module: "",
         function: "",
@@ -179,7 +174,21 @@ defmodule OrionWeb.PageLive do
       pause_state: new_pause_state
     }
 
-    socket = assign(socket, data)
+    socket =
+      socket
+      |> assign(data)
+      |> stream_insert(
+        :charts,
+        %{
+          id:
+            chart_id(
+              "#{new_match_spec.module_name}-#{new_match_spec.function_name}-#{new_match_spec.arity}",
+              socket.assigns.current_key
+            ),
+          session: session
+        },
+        at: 0
+      )
 
     {:noreply, socket}
   end
@@ -206,10 +215,9 @@ defmodule OrionWeb.PageLive do
   end
 
   @impl true
-  def handle_info({:remove, key}, socket) do
-    chart_list = Enum.reject(socket.assigns.chart_list, fn map -> map.key == key end)
-
-    {:noreply, assign(socket, :chart_list, chart_list)}
+  def handle_info({:remove, id}, socket) do
+    socket = stream_delete_by_dom_id(socket, :charts, id)
+    {:noreply, socket}
   end
 
   def pause_state_text(atom) do
@@ -223,5 +231,9 @@ defmodule OrionWeb.PageLive do
       _ ->
         "Start/Pause"
     end
+  end
+
+  defp chart_id(name, key) do
+    "measurement-#{name}-#{key}"
   end
 end

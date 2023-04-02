@@ -76,6 +76,8 @@ defmodule OrionWeb.Router do
         unless Module.get_attribute(__MODULE__, :live_orion_prefix) do
           @live_orion_prefix Phoenix.Router.scoped_path(__MODULE__, path)
           def __live_orion_prefix__, do: @live_orion_prefix
+        else
+          def __live_orion_prefix__, do: @live_orion_prefix
         end
       end
     else

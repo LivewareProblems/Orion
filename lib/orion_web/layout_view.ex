@@ -21,6 +21,8 @@ defmodule OrionWeb.LayoutView do
   defp asset_path(conn, asset) when asset in [:css, :js] do
     hash = OrionWeb.Assets.current_hash(asset)
 
+    IO.inspect(conn.private.phoenix_router)
+
     if function_exported?(conn.private.phoenix_router, :__live_orion_prefix__, 0) do
       prefix = conn.private.phoenix_router.__live_orion_prefix__()
 

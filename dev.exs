@@ -24,7 +24,7 @@ Application.put_env(:orion, OrionWeb.Endpoint,
   pubsub_server: Orion.PubSub,
   code_reloading: true,
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--watch)]},
     npx: [
       "postcss",
       "css/app.css",
@@ -46,6 +46,8 @@ Application.put_env(:orion, OrionWeb.Endpoint,
 defmodule OrionDemoWeb.Router do
   use Phoenix.Router
   import OrionWeb.Router
+
+  @live_orion_prefix ""
 
   pipeline :browser do
     plug :fetch_session
@@ -104,22 +106,18 @@ defmodule OrionWeb.Endpoint do
     plug Phoenix.CodeReloader
   end
 
+  plug Plug.Session, @session_options
+
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
-  plug Plug.Parsers,
-    parsers: [:urlencoded, :multipart, :json],
-    pass: ["*/*"],
-    json_decoder: Phoenix.json_library()
-
-  plug Plug.Session, @session_options
   plug OrionDemoWeb.Router
 end
 
 Application.ensure_all_started(:orion_collector)
 Application.put_env(:phoenix, :serve_endpoints, true)
 
-Task.async(fn ->
+Task.start(fn ->
   children = []
 
   children =
@@ -133,4 +131,3 @@ Task.async(fn ->
   {:ok, _} = Supervisor.start_link(children, strategy: :one_for_one)
   Process.sleep(:infinity)
 end)
-|> Task.await(:infinity)

@@ -64,7 +64,7 @@ defmodule Orion.MixProject do
       setup: ["deps.get", "cmd  --cd assets npm install"],
       dev: "run --no-halt dev.exs",
       "assets.build": [
-        "cmd  --cd assets npx postcss css/app.css --env=production --no-map --output=../dist/css/app.css",
+        "cmd  --cd assets npx postcss css/app.css --env=production -m --output=../dist/css/app.css",
         "esbuild default --minify"
       ]
     ]
