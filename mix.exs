@@ -42,11 +42,11 @@ defmodule Orion.MixProject do
       {:phoenix_live_view, "~> 0.18.16"},
       {:dog_sketch, "~> 0.1.2"},
       {:orion_collector, "~> 1.0.0"},
+      {:jason, "~> 1.0"},
 
       # dev and test
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:jason, "~> 1.0", only: [:dev, :test, :docs]},
       {:plug_cowboy, "~> 2.0", only: :dev},
       {:esbuild, "~> 0.7.0", only: :dev},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
