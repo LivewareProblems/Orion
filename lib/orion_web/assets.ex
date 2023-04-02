@@ -30,7 +30,6 @@ defmodule OrionWeb.Assets do
   def init(asset) when asset in [:css, :js], do: asset
 
   def call(conn, asset) do
-    IO.inspect(asset)
     {contents, content_type} = contents_and_type(asset)
 
     conn
