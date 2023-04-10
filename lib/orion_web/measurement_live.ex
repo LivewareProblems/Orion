@@ -8,7 +8,7 @@ defmodule OrionWeb.MeasurementLive do
     ~H"""
     <article class="w-full pt-4 px-4 mx-auto pb-4 flex flex-col justify-center">
       <div class="">
-        <.form for={:remove} phx-submit="remove" class="float-left">
+        <.form for={%{}} as={:remove} phx-submit="remove" class="float-left">
           <%= submit("Remove trace",
             class:
               "w-30 rounded py-2 px-2 my-3 bg-red-30 text-black focus:bg-red-80 focus:text-white hover:bg-red-80 hover:text-white"
@@ -64,16 +64,14 @@ defmodule OrionWeb.MeasurementLive do
         chart_id: "livechart-#{socket.id}"
       })
 
-    if connected?(socket) do
-      Process.send_after(self(), :update_data, 1_000)
+    Process.send_after(self(), :update_data, 1_000)
 
-      unless fake do
-        OrionCollector.Tracer.start_all_node_tracers(
-          Orion.MatchSpec.mfa(match_spec),
-          self_profile,
-          pause_state
-        )
-      end
+    unless fake do
+      OrionCollector.Tracer.start_all_node_tracers(
+        Orion.MatchSpec.mfa(match_spec),
+        self_profile,
+        pause_state
+      )
     end
 
     {:ok, socket, layout: false}

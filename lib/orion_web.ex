@@ -36,6 +36,9 @@ defmodule OrionWeb do
 
       # Import convenience functions for LiveView rendering
       import Phoenix.LiveView.Helpers
+
+      # Import Orion Components
+      import OrionWeb.Components
     end
   end
 

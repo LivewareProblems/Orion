@@ -24,7 +24,12 @@ defmodule OrionWeb.PageLive do
     </header>
     <section class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12" id="trace-form">
       <div class="flex flex-row justify-evenly">
-        <.form for={:start_pause} phx-submit="start_pause_submit" class="self-stretch flex flex-row">
+        <.form
+          for={%{}}
+          as={:start_pause}
+          phx-submit="start_pause_submit"
+          class="self-stretch flex flex-row"
+        >
           <%= submit(pause_state_text(@pause_state),
             class:
               "self-end w-30 rounded py-2 px-3 mr-3 mb-4 bg-teal-60 text-white hover:bg-dusk-50 hover:text-black"
@@ -32,49 +37,17 @@ defmodule OrionWeb.PageLive do
         </.form>
 
         <.form
-          :let={f}
-          for={:match_spec}
+          for={@match_spec_form}
           phx-submit="query_submit"
           phx-change="query_validate"
-          class="flex flex-row justify-between flex-wrap grow"
+          class="flex flex-row justify-between flex-wrap grow gap-3"
         >
-          <div class="flex flex-col flex-grow">
-            <%= label(f, :module_name, "Module", class: "text-black mx-3 my-2 font-medium") %>
-            <%= text_input(f, :module_name,
-              value: @form_value.module,
-              placeholder: "Module",
-              class:
-                "border-2 border-gray-60 bg-white text-black hover:border-teal-50 focus:border-blue-50 rounded py-2 px-2 mx-2 mb-3 leading-tight focus:outline-none"
-            ) %>
-          </div>
-
-          <div class="flex flex-col flex-grow">
-            <%= label(f, :function_name, "Function", class: "text-black mx-3 my-2 font-medium") %>
-            <%= text_input(f, :function_name,
-              value: @form_value.function,
-              placeholder: "Function",
-              class:
-                "border-2 border-gray-60 bg-white text-black hover:border-teal-50 focus:border-blue-50 rounded py-2 px-1 mx-2 mb-3 leading-tight focus:outline-none"
-            ) %>
-          </div>
-
-          <div class="flex flex-col flex-grow">
-            <%= label(f, :arity, "Arity", class: "text-black mx-3 my-2 font-medium") %>
-            <%= number_input(f, :arity,
-              value: @form_value.arity,
-              placeholder: "Arity",
-              class:
-                "border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-2 mb-3 leading-tight focus:outline-none"
-            ) %>
-          </div>
+          <.input type="text" field={@match_spec_form[:module]} label="Module" />
+          <.input type="text" field={@match_spec_form[:function]} label="Function" />
+          <.input type="text" field={@match_spec_form[:arity]} label="Arity" />
 
           <div :if={@fake_data} class="flex flex-col flex-grow">
-            <%= label(f, :fake_data, "Fake?", class: "text-black mx-2 my-2 font-medium") %>
-            <%= checkbox(f, :fake_data,
-              value: @form_value.fake,
-              class:
-                "mt-2 border-2 border-gray-60 bg-white text-black focus:border-blue-50 hover:border-teal-50 rounded py-2 px-1 mx-4 leading-tight focus:outline-none"
-            ) %>
+            <.input type="checkbox" field={@match_spec_form[:fake]} label="Fake?" />
           </div>
 
           <%= submit("Run",
@@ -109,13 +82,16 @@ defmodule OrionWeb.PageLive do
       socket
       |> stream(:charts, [])
       |> assign_new(:pause_state, fn -> :waiting end)
-      |> assign_new(:form_value, fn ->
-        %{
-          module: "",
-          function: "",
-          arity: 0,
-          fake: "false"
-        }
+      |> assign_new(:match_spec_form, fn ->
+        to_form(
+          %{
+            "module" => "",
+            "function" => "",
+            "arity" => 0,
+            "fake" => "false"
+          },
+          as: :match_spec
+        )
       end)
       |> assign_new(:current_key, fn -> 1 end)
       |> assign_new(:session_id, fn -> session_id end)
@@ -127,15 +103,7 @@ defmodule OrionWeb.PageLive do
 
   @impl true
   def handle_event("query_validate", %{"match_spec" => query}, socket) do
-    socket =
-      assign(socket, %{
-        form_value: %{
-          module: query["module_name"],
-          function: query["function_name"],
-          arity: query["arity"],
-          fake: query["fake_data"]
-        }
-      })
+    socket = assign(socket, match_spec_form: to_form(query, as: :match_spec))
 
     {:noreply, socket}
   end
@@ -143,8 +111,8 @@ defmodule OrionWeb.PageLive do
   @impl true
   def handle_event("query_submit", %{"match_spec" => query}, socket) do
     new_match_spec = %MatchSpec{
-      module_name: query["module_name"],
-      function_name: query["function_name"],
+      module_name: query["module"],
+      function_name: query["function"],
       arity: query["arity"]
     }
 
@@ -164,12 +132,16 @@ defmodule OrionWeb.PageLive do
 
     data = %{
       match_spec: new_match_spec,
-      form_value: %{
-        module: "",
-        function: "",
-        arity: 0,
-        fake: "false"
-      },
+      match_spec_form:
+        to_form(
+          %{
+            "module" => "",
+            "function" => "",
+            "arity" => 0,
+            "fake" => "false"
+          },
+          as: :match_spec
+        ),
       current_key: socket.assigns.current_key + 1,
       pause_state: new_pause_state
     }
