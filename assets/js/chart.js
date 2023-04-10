@@ -148,10 +148,12 @@ export const ChartData = {
     this.chart = new HistoChart(chartEl, quantile_data, scale);
   },
   updated() {
-    let new_scale = JSON.parse(this.el.dataset.scale);
+    let chartEl = this.el.parentElement.querySelector('.chart');
+    let new_scale = JSON.parse(chartEl.dataset.scale);
+
     if (scale == new_scale) {
-      let quantile_data = JSON.parse(this.el.dataset.quantile);
-      this.chart.updateData(quantile_data, scale);
+      let quantile_data = JSON.parse(chartEl.dataset.quantile);
+      chartEl.updateData(quantile_data, scale);
     } else {
       this.mounted();
     }

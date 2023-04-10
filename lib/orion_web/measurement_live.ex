@@ -6,9 +6,9 @@ defmodule OrionWeb.MeasurementLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="w-full pt-4 px-4 mx-auto pb-4 flex flex-col justify-center">
+    <article class="w-full pt-4 px-4 mx-auto pb-4 flex flex-col justify-center">
       <div class="">
-        <.form for={:remove} phx-submit="remove" class="float-left">
+        <.form for={%{}} as={:remove} phx-submit="remove" class="float-left">
           <%= submit("Remove trace",
             class:
               "w-30 rounded py-2 px-2 my-3 bg-red-30 text-black focus:bg-red-80 focus:text-white hover:bg-red-80 hover:text-white"
@@ -19,7 +19,7 @@ defmodule OrionWeb.MeasurementLive do
         </h3>
       </div>
       <div
-        id={"livechart-#{@key}"}
+        id={@chart_id}
         class="chart mx-auto h-full w-full text-black py-2"
         data-quantile={@quantile_data}
         data-scale={@scale}
@@ -27,7 +27,7 @@ defmodule OrionWeb.MeasurementLive do
         phx-update="ignore"
       >
       </div>
-    </div>
+    </article>
     """
   end
 
@@ -45,8 +45,7 @@ defmodule OrionWeb.MeasurementLive do
         fake_data: fake,
         start_pause_status: pause_state,
         id: pubsub_id
-      },
-      key: key
+      }
     } = Orion.MatchSpecStore.get(session)
 
     Orion.SessionPubsub.register(pubsub_id)
@@ -62,19 +61,17 @@ defmodule OrionWeb.MeasurementLive do
         fake_data: fake,
         self_profile: self_profile,
         match_spec: match_spec,
-        key: key
+        chart_id: "livechart-#{socket.id}"
       })
 
-    if connected?(socket) do
-      Process.send_after(self(), :update_data, 1_000)
+    Process.send_after(self(), :update_data, 1_000)
 
-      unless fake do
-        OrionCollector.Tracer.start_all_node_tracers(
-          Orion.MatchSpec.mfa(match_spec),
-          self_profile,
-          pause_state
-        )
-      end
+    unless fake do
+      OrionCollector.Tracer.start_all_node_tracers(
+        Orion.MatchSpec.mfa(match_spec),
+        self_profile,
+        pause_state
+      )
     end
 
     {:ok, socket, layout: false}
@@ -82,7 +79,7 @@ defmodule OrionWeb.MeasurementLive do
 
   @impl true
   def handle_event("remove", _, socket) do
-    send(socket.parent_pid, {:remove, socket.assigns.key})
+    send(socket.parent_pid, {:remove, socket.id})
     {:noreply, socket}
   end
 
