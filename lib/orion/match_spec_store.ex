@@ -10,7 +10,7 @@ defmodule Orion.MatchSpecStore do
         }
   @type session :: map()
 
-  @spec new(key(), MatchSpec.t()) :: boolean()
+  @spec new(key(), MatchSpec.t()) :: session()
   def new(
         key,
         match_spec,
