@@ -48,7 +48,7 @@ defmodule Orion.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:plug_cowboy, "~> 2.0", only: :dev},
-      {:esbuild, "~> 0.7.0", only: :dev},
+      {:esbuild, "~> 0.7.0", only: [:dev, :assets]},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end

@@ -153,7 +153,7 @@ export const ChartData = {
 
     if (scale == new_scale) {
       let quantile_data = JSON.parse(chartEl.dataset.quantile);
-      chartEl.updateData(quantile_data, scale);
+      this.chart.updateData(quantile_data, scale);
     } else {
       this.mounted();
     }

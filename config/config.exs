@@ -17,12 +17,20 @@ config :phoenix, :json_library, Jason
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
 
-if config_env() == :dev do
+if config_env() == :assets do
   config :esbuild,
     version: "0.17.5",
     default: [
       args:
         ~w(js/app.js --bundle --minify --sourcemap=external --target=es2020 --outdir=../dist/js),
+      cd: Path.expand("../assets", __DIR__),
+      env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+    ]
+else
+  config :esbuild,
+    version: "0.17.5",
+    default: [
+      args: ~w(js/app.js --bundle --sourcemap=external --target=es2020 --outdir=../dist/js),
       cd: Path.expand("../assets", __DIR__),
       env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
     ]
