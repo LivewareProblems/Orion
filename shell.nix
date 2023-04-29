@@ -6,7 +6,7 @@ let
   node = nodejs-19_x;
 
 in mkShell {
-  buildInputs = [ elixir node npm ] ++ lib.optionals stdenv.isDarwin
+  buildInputs = [ elixir node ] ++ lib.optionals stdenv.isDarwin
     (with darwin.apple_sdk.frameworks; [
       # For file_system on macO.S
       CoreFoundation
