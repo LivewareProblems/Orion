@@ -1,7 +1,7 @@
 defmodule Orion.MixProject do
   use Mix.Project
 
-  @version "1.0.2"
+  @version "1.0.3"
 
   def project do
     [
@@ -41,7 +41,7 @@ defmodule Orion.MixProject do
       # Actual deps
       {:phoenix_live_view, "~> 0.18.16"},
       {:dog_sketch, "~> 0.1.2"},
-      {:orion_collector, "~> 1.0.0"},
+      {:orion_collector, "~> 1.2.0"},
       {:jason, "~> 1.0"},
 
       # dev and test

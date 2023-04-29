@@ -59,7 +59,6 @@ defmodule OrionWeb.MeasurementLive do
         pause_state: pause_state,
         ddsketch: empty_dd,
         fake_data: fake,
-        self_profile: self_profile,
         match_spec: match_spec,
         chart_id: "livechart-#{socket.id}"
       })
@@ -122,11 +121,6 @@ defmodule OrionWeb.MeasurementLive do
   # Receive a start message
   @impl true
   def handle_info({:broadcast, :start}, socket) do
-    OrionCollector.Tracer.restart_trace(
-      Orion.MatchSpec.mfa(socket.assigns.match_spec),
-      socket.assigns.self_profile
-    )
-
     Process.send_after(self(), :update_data, 1_000)
 
     {:noreply, assign(socket, :pause_state, :running)}
@@ -135,11 +129,6 @@ defmodule OrionWeb.MeasurementLive do
   # Receive a pause message
   @impl true
   def handle_info({:broadcast, :pause}, socket) do
-    OrionCollector.Tracer.pause_trace(
-      Orion.MatchSpec.mfa(socket.assigns.match_spec),
-      socket.assigns.self_profile
-    )
-
     {:noreply, assign(socket, :pause_state, :paused)}
   end
 
