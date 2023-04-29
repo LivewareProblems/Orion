@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.0.3 [2023-04-29]
+
+* Fix multiple bugs with the JS and update dependencies
+* Fix [#13](https://github.com/LivewareProblems/Orion/issues/13), which came
+  from misunderstanding erlang tracing behaviour.
+
 ## v1.0.2 (2023-02-19)
 
 * serve assets from the router, see [#11](https://github.com/LivewareProblems/Orion/pull/11) thanks to [@mcrum](https://github.com/mcrumm)
