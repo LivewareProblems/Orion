@@ -184,14 +184,18 @@ defmodule OrionWeb.MeasurementLive do
           )
         end
 
-        socket
-        |> assign(:count_slower, new_count)
-        |> stream_insert(:slow_calls, %{
-          id: "#{socket.id}-#{socket.assings.count_slower}",
-          args: msg.args,
-          time: msg.time,
-          result: msg.result
-        })
+        if new_count <= socket.assigns.limit do
+          socket
+          |> assign(:count_slower, new_count)
+          |> stream_insert(:slow_calls, %{
+            id: "#{socket.id}-#{socket.assings.count_slower}",
+            args: msg.args,
+            time: msg.time,
+            result: msg.result
+          })
+        else
+          socket
+        end
       end
 
     {:noreply, socket}
