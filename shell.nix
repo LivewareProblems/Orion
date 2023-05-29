@@ -3,7 +3,7 @@
 with pkgs;
 let
   elixir = beam.packages.erlangR25.elixir_1_14;
-  node = nodejs-19_x;
+  node = nodejs_20;
 
 in mkShell {
   buildInputs = [ elixir node ] ++ lib.optionals stdenv.isDarwin
@@ -14,8 +14,5 @@ in mkShell {
       clang_9
     ]);
 
-  # Fix GLIBC Locale
-  LOCALE_ARCHIVE = lib.optionalString stdenv.isLinux
-    "${pkgs.glibcLocales}/lib/locale/locale-archive";
   LANG = "en_US.UTF-8";
 }
