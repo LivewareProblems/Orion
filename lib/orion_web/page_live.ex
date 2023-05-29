@@ -171,13 +171,13 @@ defmodule OrionWeb.PageLive do
     socket =
       case socket.assigns.pause_state do
         :paused ->
-          OrionCollector.Tracer.restart_trace(socket.assigns.self_profile)
+          OrionCollector.restart_all_node_tracers(socket.assigns.self_profile)
           Orion.SessionPubsub.dispatch(socket.assigns.session_id, :start)
 
           assign(socket, :pause_state, :running)
 
         :running ->
-          OrionCollector.Tracer.pause_trace(socket.assigns.self_profile)
+          OrionCollector.pause_all_node_tracers(socket.assigns.self_profile)
           Orion.SessionPubsub.dispatch(socket.assigns.session_id, :pause)
           assign(socket, :pause_state, :paused)
 

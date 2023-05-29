@@ -60,13 +60,14 @@ defmodule OrionWeb.MeasurementLive do
         ddsketch: empty_dd,
         fake_data: fake,
         match_spec: match_spec,
-        chart_id: "livechart-#{socket.id}"
+        chart_id: "livechart-#{socket.id}",
+        self_profile: self_profile
       })
 
     Process.send_after(self(), :update_data, 1_000)
 
     unless fake do
-      OrionCollector.Tracer.start_all_node_tracers(
+      OrionCollector.start_all_node_tracers(
         Orion.MatchSpec.mfa(match_spec),
         self_profile,
         pause_state
@@ -74,6 +75,45 @@ defmodule OrionWeb.MeasurementLive do
     end
 
     {:ok, socket, layout: false}
+  end
+
+  @impl true
+  def handle_event("slowest_start", %{"threshold" => timing_ms, "limit" => limit}, socket) do
+    unless socket.assigns.fake_data do
+      OrionCollector.capture_all_nodes_slowest_calls(
+        Orion.MatchSpec.mfa(socket.assigns.match_spec),
+        socket.assigns.self_profile,
+        timing_ms
+      )
+    end
+
+    socket =
+      socket
+      |> assign(:threshold, timing_ms)
+      |> assign(:limit_slower, limit)
+      |> stream(:slow_calls, [])
+      |> assign(:count_slower, 0)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("slowest_stop", _, socket) do
+    unless socket.assigns.fake_data do
+      OrionCollector.stop_all_nodes_slowest_calls(
+        Orion.MatchSpec.mfa(socket.assigns.match_spec),
+        socket.assigns.self_profile
+      )
+    end
+
+    socket =
+      socket
+      |> assign(:threshold, nil)
+      |> assign(:limit_slower, 5)
+      |> stream(:slow_calls, [])
+      |> assign(:count_slower, 0)
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -130,6 +170,31 @@ defmodule OrionWeb.MeasurementLive do
   @impl true
   def handle_info({:broadcast, :pause}, socket) do
     {:noreply, assign(socket, :pause_state, :paused)}
+  end
+
+  def handle_info(%OrionCollector.TimingMessage{} = msg, socket) do
+    socket =
+      if msg.slowest_than == socket.assigns.threshold do
+        new_count = socket.assigns.count_slower + 1
+
+        if new_count == socket.assigns.limit do
+          OrionCollector.stop_all_nodes_slowest_calls(
+            Orion.MatchSpec.mfa(socket.assigns.match_spec),
+            socket.assigns.self_profile
+          )
+        end
+
+        socket
+        |> assign(:count_slower, new_count)
+        |> stream_insert(:slow_calls, %{
+          id: "#{socket.id}-#{socket.assings.count_slower}",
+          args: msg.args,
+          time: msg.time,
+          result: msg.result
+        })
+      end
+
+    {:noreply, socket}
   end
 
   # -- UTILS --
