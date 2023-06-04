@@ -43,6 +43,8 @@ defmodule Orion.MixProject do
       {:dog_sketch, "~> 0.1.2"},
       {:orion_collector, "~> 2.0.0"},
       {:jason, "~> 1.0"},
+      {:ecto, "~> 3.10"},
+      {:phoenix_ecto, "~> 4.4"},
 
       # dev and test
       {:floki, ">= 0.30.0", only: :test},

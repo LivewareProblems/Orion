@@ -61,7 +61,7 @@ defmodule OrionWeb.PageLive do
 
     <section
       id="chart-list"
-      class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12"
+      class="mx-auto m-4 rounded-lg max-w-screen-xl min-w-sm w-11/12 p-2"
       phx-update="stream"
     >
       <%= for {id, %{session: session}} <- @streams.charts do %>

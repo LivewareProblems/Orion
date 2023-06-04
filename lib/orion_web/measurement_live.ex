@@ -6,7 +6,7 @@ defmodule OrionWeb.MeasurementLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <article class="w-full pt-4 px-4 mx-auto pb-4 flex flex-col justify-center">
+    <article class="w-full px-4 mx-auto flex flex-col justify-center gap-5">
       <div class="">
         <.form for={%{}} as={:remove} phx-submit="remove" class="float-left">
           <%= submit("Remove trace",
@@ -20,13 +20,14 @@ defmodule OrionWeb.MeasurementLive do
       </div>
       <div
         id={@chart_id}
-        class="chart mx-auto h-full w-full text-black py-2"
+        class="chart mx-auto h-full w-full text-black"
         data-quantile={@quantile_data}
         data-scale={@scale}
         phx-hook="ChartData"
         phx-update="ignore"
       >
       </div>
+      <.slowest_block_form form={@slowest_form} />
     </article>
     """
   end
@@ -61,7 +62,8 @@ defmodule OrionWeb.MeasurementLive do
         fake_data: fake,
         match_spec: match_spec,
         chart_id: "livechart-#{socket.id}",
-        self_profile: self_profile
+        self_profile: self_profile,
+        slowest_form: %Orion.Schemas.SlowestForm{} |> Ecto.Changeset.change() |> to_form()
       })
 
     Process.send_after(self(), :update_data, 1_000)

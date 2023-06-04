@@ -29,6 +29,8 @@ defmodule OrionWeb.Components do
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
 
+  attr :classes, :string, default: "", doc: "additional classes to control the input"
+
   attr :rest, :global,
     include: ~w(autocomplete cols disabled form list max maxlength min minlength
                 pattern placeholder readonly required rows size step)
@@ -75,7 +77,7 @@ defmodule OrionWeb.Components do
       <select
         id={@id}
         name={@name}
-        class="mt-1 block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
+        class="mt-1 block w-full rounded-md border border-gray-30 bg-white shadow-sm focus:border-gray-40 focus:ring-0 sm:text-sm"
         multiple={@multiple}
         {@rest}
       >
@@ -107,8 +109,8 @@ defmodule OrionWeb.Components do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name} class="flex flex-col flex-grow">
-      <.label for={@id}><%= @label %></.label>
+    <div phx-feedback-for={@name} class={["flex flex-col grow", @classes]}>
+      <.label :if={@label} for={@id}><%= @label %></.label>
       <input
         type={@type}
         name={@name}
@@ -172,5 +174,30 @@ defmodule OrionWeb.Components do
   """
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
+  end
+
+  @doc """
+  Form to configure slowest values
+  """
+  attr :form, :any, required: true, doc: "form datastructure"
+
+  def slowest_block_form(assigns) do
+    ~H"""
+    <div class="flex flex-col items-center">
+      <.form
+        for={@form}
+        as={:slowest_start}
+        phx-submit="slowest_start"
+        class="flex flex-row gap-2 items-baseline"
+      >
+        Tracing the next
+        <.input field={@form[:limit]} classes="shrink basis-12 grow-0" />calls slower than
+        <.input field={@form[:threshold]} classes="shrink basis-12 grow-0" />
+        ms <%= Phoenix.HTML.Form.submit("Start Tracing",
+          class: "rounded px-4 py-3 ml-4 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"
+        ) %>
+      </.form>
+    </div>
+    """
   end
 end
