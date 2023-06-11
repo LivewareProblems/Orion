@@ -28,7 +28,61 @@ defmodule OrionWeb.MeasurementLive do
       >
       </div>
       <.slowest_block_form form={@slowest_form} />
+      <.slowest_block_table id={@slowest_id} data_stream={@streams.slow_calls} />
     </article>
+    """
+  end
+
+  @doc """
+  Form to configure slowest values
+  """
+  attr :form, :any, required: true, doc: "form datastructure"
+
+  def slowest_block_form(assigns) do
+    ~H"""
+    <div class="flex flex-col items-center">
+      <.form
+        for={@form}
+        as={:slowest_start}
+        phx-submit="slowest_start"
+        phx-validate="slowest_validate"
+        class="flex flex-row gap-2 items-baseline"
+      >
+        Tracing the next
+        <.input field={@form[:limit]} classes="shrink basis-12 grow-0" />calls slower than
+        <.input field={@form[:threshold]} classes="shrink basis-12 grow-0" />
+        ms <%= Phoenix.HTML.Form.submit("Start Tracing",
+          class: "rounded px-4 py-3 ml-4 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"
+        ) %>
+      </.form>
+    </div>
+    """
+  end
+
+  @doc """
+  Table to show slowest traces
+  """
+  attr :data_stream, :any, required: true, doc: "stream of function to table"
+  attr :id, :string, required: true, doc: "the dom id of the stream"
+
+  def slowest_block_table(assigns) do
+    ~H"""
+    <table>
+      <thead>
+        <tr>
+          <th>Time in ms</th>
+          <th>Arguments list</th>
+          <th>Returns</th>
+        </tr>
+      </thead>
+      <tbody id={@id} phx-update="stream">
+        <tr :for={{dom_id, trace} <- @data_stream} id={dom_id}>
+          <td><%= trace.time %></td>
+          <td><%= inspect(trace.args) %></td>
+          <td><%= inspect(trace.result) %></td>
+        </tr>
+      </tbody>
+    </table>
     """
   end
 
@@ -63,8 +117,12 @@ defmodule OrionWeb.MeasurementLive do
         match_spec: match_spec,
         chart_id: "livechart-#{socket.id}",
         self_profile: self_profile,
-        slowest_form: %Orion.Schemas.SlowestForm{} |> Ecto.Changeset.change() |> to_form()
+        slowest_form: %Orion.Schemas.SlowestForm{} |> Ecto.Changeset.change() |> to_form(),
+        slowest_data: %Orion.Schemas.SlowestForm{},
+        slowest_id: "slowest-table-#{socket.id}"
       })
+      |> stream(:slow_calls, [], reset: true)
+      |> assign(:count_slower, 0)
 
     Process.send_after(self(), :update_data, 1_000)
 
@@ -80,42 +138,50 @@ defmodule OrionWeb.MeasurementLive do
   end
 
   @impl true
-  def handle_event("slowest_start", %{"threshold" => timing_ms, "limit" => limit}, socket) do
-    unless socket.assigns.fake_data do
-      OrionCollector.capture_all_nodes_slowest_calls(
-        Orion.MatchSpec.mfa(socket.assigns.match_spec),
-        socket.assigns.self_profile,
-        timing_ms
-      )
-    end
+  def handle_event("slowest_validate", %{"slowest_form" => slowest_form_params}, socket) do
+    changeset =
+      socket.assigns.slowest_data
+      |> Orion.Schemas.SlowestForm.changeset(slowest_form_params)
+      |> Map.put(:action, :validate)
+      |> to_form()
 
-    socket =
-      socket
-      |> assign(:threshold, timing_ms)
-      |> assign(:limit_slower, limit)
-      |> stream(:slow_calls, [])
-      |> assign(:count_slower, 0)
-
-    {:noreply, socket}
+    assign(socket, :slowest_form, changeset)
   end
 
   @impl true
-  def handle_event("slowest_stop", _, socket) do
-    unless socket.assigns.fake_data do
-      OrionCollector.stop_all_nodes_slowest_calls(
-        Orion.MatchSpec.mfa(socket.assigns.match_spec),
-        socket.assigns.self_profile
-      )
+  def handle_event(
+        "slowest_start",
+        %{"slowest_form" => slowest_form_params},
+        socket
+      ) do
+    changeset =
+      socket.assigns.slowest_data
+      |> Orion.Schemas.SlowestForm.changeset(slowest_form_params)
+
+    with {:ok, data} <-
+           Ecto.Changeset.apply_action(changeset, :update) do
+      unless socket.assigns.fake_data do
+        OrionCollector.capture_all_nodes_slowest_calls(
+          Orion.MatchSpec.mfa(socket.assigns.match_spec),
+          socket.assigns.self_profile,
+          System.convert_time_unit(data.threshold, :millisecond, :microsecond)
+        )
+      end
+
+      slowest_data = %Orion.Schemas.SlowestForm{threshold: data.threshold, limit: data.limit}
+
+      socket =
+        socket
+        |> stream(:slow_calls, [], reset: true)
+        |> assign(:count_slower, 0)
+        |> assign(:slowest_form, to_form(Orion.Schemas.SlowestForm.changeset(slowest_data, %{})))
+        |> assign(:slowest_data, slowest_data)
+
+      {:noreply, socket}
+    else
+      {:error, changeset} ->
+        assign(socket, :slowest_form, to_form(changeset))
     end
-
-    socket =
-      socket
-      |> assign(:threshold, nil)
-      |> assign(:limit_slower, 5)
-      |> stream(:slow_calls, [])
-      |> assign(:count_slower, 0)
-
-    {:noreply, socket}
   end
 
   @impl true
@@ -176,23 +242,23 @@ defmodule OrionWeb.MeasurementLive do
 
   def handle_info(%OrionCollector.TimingMessage{} = msg, socket) do
     socket =
-      if msg.slowest_than == socket.assigns.threshold do
+      if msg.slowest_than == socket.assigns.slowest_data.threshold do
         new_count = socket.assigns.count_slower + 1
 
-        if new_count == socket.assigns.limit do
+        if new_count == socket.assigns.slowest_data.limit do
           OrionCollector.stop_all_nodes_slowest_calls(
             Orion.MatchSpec.mfa(socket.assigns.match_spec),
             socket.assigns.self_profile
           )
         end
 
-        if new_count <= socket.assigns.limit do
+        if new_count <= socket.assigns.slowest_data.limit do
           socket
           |> assign(:count_slower, new_count)
           |> stream_insert(:slow_calls, %{
-            id: "#{socket.id}-#{socket.assings.count_slower}",
+            id: "#{socket.id}-#{socket.assigns.count_slower}",
             args: msg.args,
-            time: msg.time,
+            time: msg.time / 1_000,
             result: msg.result
           })
         else

@@ -175,29 +175,4 @@ defmodule OrionWeb.Components do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
-
-  @doc """
-  Form to configure slowest values
-  """
-  attr :form, :any, required: true, doc: "form datastructure"
-
-  def slowest_block_form(assigns) do
-    ~H"""
-    <div class="flex flex-col items-center">
-      <.form
-        for={@form}
-        as={:slowest_start}
-        phx-submit="slowest_start"
-        class="flex flex-row gap-2 items-baseline"
-      >
-        Tracing the next
-        <.input field={@form[:limit]} classes="shrink basis-12 grow-0" />calls slower than
-        <.input field={@form[:threshold]} classes="shrink basis-12 grow-0" />
-        ms <%= Phoenix.HTML.Form.submit("Start Tracing",
-          class: "rounded px-4 py-3 ml-4 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"
-        ) %>
-      </.form>
-    </div>
-    """
-  end
 end

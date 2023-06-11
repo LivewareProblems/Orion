@@ -39,7 +39,7 @@ defmodule Orion.MixProject do
   defp deps do
     [
       # Actual deps
-      {:phoenix_live_view, "~> 0.18.16"},
+      {:phoenix_live_view, "~> 0.19"},
       {:dog_sketch, "~> 0.1.2"},
       {:orion_collector, "~> 2.0.0"},
       {:jason, "~> 1.0"},

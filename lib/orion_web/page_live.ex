@@ -85,9 +85,9 @@ defmodule OrionWeb.PageLive do
       |> assign_new(:match_spec_form, fn ->
         to_form(
           %{
-            "module" => "",
-            "function" => "",
-            "arity" => 0,
+            "module" => "Enum",
+            "function" => "map",
+            "arity" => 2,
             "fake" => "false"
           },
           as: :match_spec
