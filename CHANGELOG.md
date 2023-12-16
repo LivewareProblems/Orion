@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.0.4 [2023-12-16]
+
+* Relax phoenix_live_view version constraints, see [#15](https://github.com/LivewareProblems/Orion/pull/15) thanks to [@wkirschbaum](https://github.com/wkirschbaum)
+
 ## v1.0.3 [2023-04-29]
 
 * Fix multiple bugs with the JS and update dependencies

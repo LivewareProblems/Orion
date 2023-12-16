@@ -1,7 +1,7 @@
 defmodule Orion.MixProject do
   use Mix.Project
 
-  @version "1.0.3"
+  @version "1.0.4"
 
   def project do
     [
