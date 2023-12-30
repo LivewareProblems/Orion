@@ -2,8 +2,8 @@
 
 with pkgs;
 let
-  elixir = beam.packages.erlangR25.elixir_1_14;
-  node = nodejs_20;
+  elixir = beam.packages.erlangR26.elixir_1_15;
+  node = nodejs_21;
 
 in mkShell {
   buildInputs = [ elixir node ] ++ lib.optionals stdenv.isDarwin
