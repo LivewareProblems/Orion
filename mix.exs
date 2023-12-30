@@ -39,7 +39,8 @@ defmodule Orion.MixProject do
   defp deps do
     [
       # Actual deps
-      {:phoenix_live_view, "~> 0.19"},
+      {:phoenix_live_view, ">= 0.18.16 and <= 0.21.0"},
+      {:phoenix_html_helpers, "~> 1.0"},
       {:dog_sketch, "~> 0.1.2"},
       {:orion_collector, "~> 2.0.0"},
       {:jason, "~> 1.0"},
@@ -50,7 +51,7 @@ defmodule Orion.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:plug_cowboy, "~> 2.0", only: :dev},
-      {:esbuild, "~> 0.7.0", only: [:dev, :assets]},
+      {:esbuild, "~> 0.8.0", only: [:dev, :assets]},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
