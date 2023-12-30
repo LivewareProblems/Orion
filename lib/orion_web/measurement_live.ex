@@ -51,7 +51,7 @@ defmodule OrionWeb.MeasurementLive do
         Tracing the next
         <.input field={@form[:limit]} classes="shrink basis-12 grow-0" />calls slower than
         <.input field={@form[:threshold]} classes="shrink basis-12 grow-0" />
-        ms <%= Phoenix.HTML.Form.submit("Start Tracing",
+        ms <%= PhoenixHTMLHelpers.Form.submit("Start Tracing",
           class: "rounded px-4 py-3 ml-4 bg-dusk-60 text-white hover:bg-dusk-50 hover:text-black"
         ) %>
       </.form>
