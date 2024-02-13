@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.0.5 [2024-02-13]
+
+* Fix phoenix version errors, close [#16](https://github.com/LivewareProblems/Orion/issues/16)
+
 ## v1.0.4 [2023-12-16]
 
 * Relax phoenix_live_view version constraints, see [#15](https://github.com/LivewareProblems/Orion/pull/15) thanks to [@wkirschbaum](https://github.com/wkirschbaum)
