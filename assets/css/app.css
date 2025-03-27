@@ -1,12 +1,9 @@
+@config "../tailwind.config.js";
+
 /*! purgecss start ignore */
 
-@import 'uplot/dist/uPlot.min.css';
+@import "uplot/dist/uPlot.min.css";
 
 /*! purgecss end ignore */
 
-@tailwind base;
-
-@tailwind components;
-
-
-@tailwind utilities;
+@import "tailwindcss";

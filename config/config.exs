@@ -19,7 +19,7 @@ config :phoenix, :stacktrace_depth, 20
 
 if config_env() == :assets do
   config :esbuild,
-    version: "0.17.5",
+    version: "0.25.1",
     default: [
       args:
         ~w(js/app.js --bundle --minify --sourcemap=external --target=es2020 --outdir=../dist/js),
