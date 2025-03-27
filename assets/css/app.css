@@ -1,5 +1,3 @@
-@config "../tailwind.config.js";
-
 /*! purgecss start ignore */
 
 @import "uplot/dist/uPlot.min.css";
@@ -7,3 +5,17 @@
 /*! purgecss end ignore */
 
 @import "tailwindcss";
+@import "./themes.css";
+@plugin "@tailwindcss/forms";
+
+@source "./js";
+@source "../lib";
+
+@custom-variant phx-no-feedback ([".phx-no-feedback&", ".phx-no-feedback &"]);
+@custom-variant phx-click-loading ([".phx-click-loading&", ".phx-click-loading &"]);
+@custom-variant phx-submit-loading ([".phx-submit-loading&", ".phx-submit-loading &"]);
+@custom-variant phx-change-loading ([".phx-change-loading&", ".phx-change-loading &"]);
+
+[data-phx-root-id] {
+  display: contents;
+}
