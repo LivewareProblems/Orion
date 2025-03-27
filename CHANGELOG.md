@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.0.6 [2025-03-27]
+
+* Use Phoenix LiveView v1.0+, enabling to run on newer liveview
+* Updates assets dependencies
+
 ## v1.0.5 [2024-02-13]
 
 * Fix phoenix version errors, close [#16](https://github.com/LivewareProblems/Orion/issues/16)

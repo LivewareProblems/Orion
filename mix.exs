@@ -1,13 +1,13 @@
 defmodule Orion.MixProject do
   use Mix.Project
 
-  @version "1.0.5"
+  @version "1.0.6"
 
   def project do
     [
       app: :orion,
       version: @version,
-      elixir: "~> 1.14",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       start_permanent: Mix.env() == :prod,
