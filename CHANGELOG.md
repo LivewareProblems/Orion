@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.0.7 [2025-03-28]
+
+* Update CSS to tailwind 4.0
+
 ## v1.0.6 [2025-03-27]
 
 * Use Phoenix LiveView v1.0+, enabling to run on newer liveview
