@@ -28,7 +28,7 @@ if config_env() == :assets do
     ]
 else
   config :esbuild,
-    version: "0.17.5",
+    version: "0.25.1",
     default: [
       args: ~w(js/app.js --bundle --sourcemap=external --target=es2020 --outdir=../dist/js),
       cd: Path.expand("../assets", __DIR__),

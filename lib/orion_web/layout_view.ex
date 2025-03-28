@@ -6,8 +6,10 @@ defmodule OrionWeb.LayoutView do
 
   def render("home.html", assigns), do: home(assigns)
 
-  defp csp_nonce(conn, type) when type in [:script, :style, :img] do
-    csp_nonce_assign_key = conn.private.csp_nonce_assign_key[type]
+  defp csp_nonce(conn, type) when type in [:script, :style] do
+    csp_nonce_assign_key =
+      conn.private.csp_nonce_assign_key[type]
+
     conn.assigns[csp_nonce_assign_key]
   end
 

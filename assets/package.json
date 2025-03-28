@@ -2,9 +2,9 @@
   "repository": {},
   "description": " ",
   "license": "MIT",
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {
+    "@tailwindcss/postcss": "^4.0.17",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",

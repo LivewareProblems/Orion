@@ -9,9 +9,8 @@
 @plugin "@tailwindcss/forms";
 
 @source "./js";
-@source "../lib";
+@source "../../lib";
 
-@custom-variant phx-no-feedback ([".phx-no-feedback&", ".phx-no-feedback &"]);
 @custom-variant phx-click-loading ([".phx-click-loading&", ".phx-click-loading &"]);
 @custom-variant phx-submit-loading ([".phx-submit-loading&", ".phx-submit-loading &"]);
 @custom-variant phx-change-loading ([".phx-change-loading&", ".phx-change-loading &"]);

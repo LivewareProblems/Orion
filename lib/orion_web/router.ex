@@ -98,7 +98,7 @@ defmodule OrionWeb.Router do
     csp_nonce_assign_key =
       case options[:csp_nonce_assign_key] do
         nil -> nil
-        key when is_atom(key) -> %{img: key, style: key, script: key}
+        key when is_atom(key) -> %{style: key, script: key}
         %{} = keys -> Map.take(keys, [:img, :style, :script])
       end
 
@@ -131,7 +131,6 @@ defmodule OrionWeb.Router do
       "self_profile" => self_profile,
       "fake_data" => fake_data,
       "csp_nonces" => %{
-        img: conn.assigns[csp_nonce_assign_key[:img]],
         style: conn.assigns[csp_nonce_assign_key[:style]],
         script: conn.assigns[csp_nonce_assign_key[:script]]
       }
